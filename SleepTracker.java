@@ -20,6 +20,10 @@ class logSleep {
 
 }
 
+class sleepRecommendation{
+
+}
+
 class SleepHistory{
     private int averageSleepDuration;
 
@@ -36,4 +40,12 @@ class SleepHistory{
 
 class SleepNode{
     // sleep data for a single day
+    private Time sleepTime;
+    private Time wakeTime;
+    private int duration;
+    public SleepNode(Time sleep, Time wake, int duration){
+        sleepTime = sleep;
+        wakeTime = wake;
+        this.duration = duration;
+    }
 }
