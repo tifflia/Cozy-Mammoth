@@ -9,7 +9,9 @@ import java.awt.Graphics2D;
 public class SleepTracker{
 
 }
-
+public class Time {
+    public int militaryTime;
+}
 class User{
 
 }
