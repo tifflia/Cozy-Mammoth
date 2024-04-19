@@ -20,7 +20,7 @@ class logSleep {
 
 }
 
-class sleepRecommendation{
+class SleepRecommendation{
 
 }
 
@@ -35,15 +35,23 @@ class SleepHistory{
     // calculate average sleep time method
     // delete old sleep data method
     // draw method
-    // sleep recommendations method??
 }
 
 class SleepNode{
     // sleep data for a single day
+    SleepObject s;
+    SleepNode prev;
+    SleepNode next;
+    public SleepNode(SleepObject s){
+        this.s = s;
+    }
+}
+
+class SleepObject{
     private Time sleepTime;
     private Time wakeTime;
     private int duration;
-    public SleepNode(Time sleep, Time wake, int duration){
+    public SleepObject(Time sleep, Time wake, int duration){
         sleepTime = sleep;
         wakeTime = wake;
         this.duration = duration;
