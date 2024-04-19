@@ -37,7 +37,7 @@ class SleepHistory{
     // draw method
 }
 
-class SleepNode{
+class SleepNode{    // generic? extends?
     // sleep data for a single day
     SleepObject s;
     SleepNode prev;
@@ -48,11 +48,11 @@ class SleepNode{
 }
 
 class SleepObject{
-    private Time sleepTime;
+    private Time bedtime;
     private Time wakeTime;
     private int duration;
-    public SleepObject(Time sleep, Time wake, int duration){
-        sleepTime = sleep;
+    public SleepObject(Time bedtime, Time wake, int duration){
+        this.bedtime = bedtime;
         wakeTime = wake;
         this.duration = duration;
     }
