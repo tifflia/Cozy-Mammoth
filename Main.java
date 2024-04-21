@@ -155,13 +155,13 @@ class SleepHistory{
 
     //add data to sleep history
     public void addDay(SleepNode day){
-        this.sleepHistory.add(day);
+        sleepHistory.add(day);
     }
   
     //calculate average sleep time
     public void getAverageDuration(){
         int total = 0;
-        for (SleepNode day: sleepHistory){
+        for (SleepNode day : sleepHistory){
             total += day.getDuration();
         }
         averageSleepDuration = total / sleepHistory.size();
@@ -172,11 +172,23 @@ class SleepHistory{
         return averageSleepDuration;
     }
 
-    // delete old sleep data
-    public void oldSleepData(){
-
+    // have if-statement in tester after adding day, if (sleepHistory.size() == 8), deleteOldSleepData
+    //delete sleep data of oldest day
+    public void deleteOldSleepData(){
+        sleepHistory.remove(0);
     }
-    // draw method
+    
+    //sort data in order
+
+
+    //draw method
+
+
+    // --> sunday to sat, once week is over, gives a summary (maybe on monday? --> could later have settings where can set which day you want new summary to show. default could be on sunday.)
+    // questions to consider: what if you don't put in data for a day --> calculations affected? (make object null then if they skipped) --> check if numbers in order.
+    // have ea day - element - day ie : 1-7 monday, etc.
+    // new day--> plus 1 of prev. new day, pop old one -- continuous
+    // have to make sure inputs are ordered --> date/time check, reorder
 }
 
 class SleepNode{
@@ -184,6 +196,7 @@ class SleepNode{
     private Time bedTime;
     private Time wakeTime;
     private int duration;
+    private         // we get the day of the week based on the date
     public SleepNode(Time bedtime, Time wake){
         bedTime = bedtime;
         wakeTime = wake;
@@ -202,6 +215,7 @@ class SleepNode{
         // turn sleeptime and wake time to int, calcualte duration
         // duration = 
     }
+
     public int getDuration(){
         return duration;
     }
