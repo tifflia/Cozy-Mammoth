@@ -3,6 +3,8 @@ import java.awt.Graphics;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
+
+import java.util.ArrayList;
 import java.util.Random;
 import java.awt.Graphics2D;
 
@@ -135,35 +137,63 @@ class sleepRecommendation {
 }
 
 class SleepHistory{
+    //contains history of sleep from past week
     private int averageSleepDuration;
+    ArrayList<SleepNode> sleepHistory = new ArrayList<SleepNode>();
 
-    public SleepHistory(){
+    public SleepHistory(SleepNode day){
     }
-    // contains history of sleep from past week
-    /* have a wrapper - something that contains
-     * sleep data per day that week*/
-    // calculate average sleep time method
-    // delete old sleep data method
+
+    //add data to sleep history
+    public void addDay(SleepNode day){
+        this.sleepHistory.add(day);
+    }
+  
+    //calculate average sleep time
+    public void getAverageDuration(){
+        int total = 0;
+        for (SleepNode day: sleepHistory){
+            total += day.getDuration();
+        }
+        averageSleepDuration = total / sleepHistory.size();
+    }
+
+    //getter for average sleep
+    public int getAverageSleepDuration(){
+        return averageSleepDuration;
+    }
+
+    // delete old sleep data
+    public void oldSleepData(){
+
+    }
     // draw method
 }
 
-class SleepNode{    // generic? extends?
-    // sleep data for a single day
-    SleepObject s;
-    SleepNode prev;
-    SleepNode next;
-    public SleepNode(SleepObject s){
-        this.s = s;
-    }
-}
-
-class SleepObject{
-    private Time bedtime;
+class SleepNode{
+    //sleep data for a single day
+    private Time bedTime;
     private Time wakeTime;
     private int duration;
-    public SleepObject(Time bedtime, Time wake, int duration){
-        this.bedtime = bedtime;
+    public SleepNode(Time bedtime, Time wake){
+        bedTime = bedtime;
         wakeTime = wake;
-        this.duration = duration;
+    }
+    // getters
+
+    public Time getBedTime(){
+        return bedTime;
+    }
+
+    public Time getWakeTime(){
+        return wakeTime;
+    }
+
+    public void calculateDuration(Time sleepTime, Time wakeTime){
+        // turn sleeptime and wake time to int, calcualte duration
+        // duration = 
+    }
+    public int getDuration(){
+        return duration;
     }
 }
