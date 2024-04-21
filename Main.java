@@ -13,9 +13,9 @@ public class Main{
         //testing user and time class
         Time bedTime = new Time(0, 30);
         Time wakeTime = new Time(8, 30);
-        User testUser = new User("John Doe", 20, 8, sleepTime, wakeTime);
-        System.out.println("bedtime goal: " + testUser.getBedTime);
-        System.out.println("wake up goal: " + testUser.getWakeTime);
+        User testUser = new User("John Doe", 20, 8, bedTime, wakeTime);
+        System.out.println("bedtime goal: " + testUser.getBedTime());
+        System.out.println("wake up goal: " + testUser.getWakeTime());
     }
 }
 
@@ -51,13 +51,13 @@ class User{
         sleepGoal = newGoal;
     }
     public int getSleepGoal() {
-        return sleepTime;
+        return sleepGoal;
     }
     public void setBedTime(Time newTime) {
-        sleepTime = newTime;
+        bedTime = newTime;
     }
     public Time getBedTime() {
-        return sleepTime;
+        return bedTime;
     }
     public void setWakeTime(Time newTime) {
         wakeTime = newTime;
