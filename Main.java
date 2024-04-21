@@ -102,9 +102,36 @@ class Time{
 }
 
 class logSleep{
+    private int wakeTime;
+    private int sleepTime;
+
+    public logSleep(int sleepTime, int wakeTime) {
+        this.sleepTime = sleepTime;
+        this.wakeTime = wakeTime;
+    }
+
+    //Getter and setter methods for sleep time and wake time
+    public int getSleepTime(){
+        return sleepTime;
+    }
+
+    public void setSleepTime(int sleepTime) {
+        this.sleepTime = sleepTime;
+    }
+
+    public int getWakeTime() {
+        return wakeTime;
+    }
+
+    public void setWakeTime(int wakeTime) {
+        this.wakeTime = wakeTime;
+    }
+
+    // draw method
 }
 
-class SleepRecommendation{
+class sleepRecommendation {
+
 }
 
 class SleepHistory{
