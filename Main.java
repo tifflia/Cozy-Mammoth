@@ -140,7 +140,7 @@ class logSleep{
     // draw method
 }
 
-class sleepRecommendation {
+class SleepRecommendation {
 
 }
 
@@ -150,6 +150,7 @@ class SleepHistory{
     ArrayList<SleepNode> sleepHistory = new ArrayList<SleepNode>();
 
     public SleepHistory(SleepNode day){
+        // set null
     }
 
     //add data to sleep history
@@ -177,17 +178,13 @@ class SleepHistory{
         sleepHistory.remove(0);
     }
     
-    //sort data in order
+    //sort data in order (days of week)
 
 
     //draw method
 
 
-    // --> sunday to sat, once week is over, gives a summary (maybe on monday? --> could later have settings where can set which day you want new summary to show. default could be on sunday.)
-    // questions to consider: what if you don't put in data for a day --> calculations affected? (make object null then if they skipped) --> check if numbers in order.
-    // have ea day - element - day ie : 1-7 monday, etc.
-    // new day--> plus 1 of prev. new day, pop old one -- continuous
-    // have to make sure inputs are ordered --> date/time check, reorder
+    // have settings where can set which day you want new summary to show. default could be on sunday.)
 }
 
 class SleepNode{
@@ -195,7 +192,8 @@ class SleepNode{
     private Time bedTime;
     private Time wakeTime;
     private int duration;
-    private         // we get the day of the week based on the date
+    //get the day of the week based on the date
+    
     public SleepNode(Time bedtime, Time wake){
         bedTime = bedtime;
         wakeTime = wake;
