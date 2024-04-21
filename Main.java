@@ -9,26 +9,28 @@ import java.awt.Graphics2D;
 public class Main{
     public static void main(String[] args){
         //testing user and time class
-        Time sleepGoal = new Time(0, 30);
-        Time wakeGoal = new Time(8, 30);
-        User testUser = new User("John Doe", 20, sleepGoal, wakeGoal);
-        System.out.println("sleep goal: " + sleepGoal);
-        System.out.println("wake goal: " + wakeGoal);
+        Time bedTime = new Time(0, 30);
+        Time wakeTime = new Time(8, 30);
+        User testUser = new User("John Doe", 20, 8, sleepTime, wakeTime);
+        System.out.println("bedtime goal: " + testUser.getBedTime);
+        System.out.println("wake up goal: " + testUser.getWakeTime);
     }
 }
 
 class User{
     private String name;
     private int age;
-    private Time sleepGoal;
-    private Time wakeGoal;
+    private int sleepGoal;
+    private Time bedTime;
+    private Time wakeTime;
 
     //constructor
-    public User(String userName, int userAge, Time sleepTime, Time wakeTime) {
+    public User(String userName, int userAge, int sleep, Time bed, Time wake) {
         name = userName;
         age = userAge;
-        sleepGoal = sleepTime;
-        wakeGoal = wakeTime;
+        sleepGoal = sleep;
+        bedTime = bed;
+        wakeTime = wake;
     }
     //field getters and setters
     public void setName(String newName) {
@@ -43,17 +45,23 @@ class User{
     public int getAge() {
         return age;
     }
-    public void setSleepGoal(Time newTime) {
-        sleepGoal = newTime;
+    public void setSleepGoal(int newGoal) {
+        sleepGoal = newGoal;
     }
-    public Time getSleepGoal() {
-        return sleepGoal;
+    public int getSleepGoal() {
+        return sleepTime;
     }
-    public void setWakeGoal(Time newTime) {
-        wakeGoal = newTime;
+    public void setBedTime(Time newTime) {
+        sleepTime = newTime;
     }
-    public Time getWakeGoal() {
-        return wakeGoal;
+    public Time getBedTime() {
+        return sleepTime;
+    }
+    public void setWakeTime(Time newTime) {
+        wakeTime = newTime;
+    }
+    public Time getWakeTime() {
+        return wakeTime;
     }
 }
 
