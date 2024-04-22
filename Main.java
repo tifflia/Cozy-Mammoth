@@ -17,6 +17,8 @@ public class Main{
         User testUser = new User("John Doe", 20, 8, bedTime, wakeTime);
         System.out.println("bedtime goal: " + testUser.getBedTime());
         System.out.println("wake up goal: " + testUser.getWakeTime());
+        SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal());
+        System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
     }
 }
 
@@ -84,6 +86,12 @@ class Time{
     }
 
     //add getters and setters?
+    public int getHour(){
+        return hours;
+    }
+    public int getMinutes(){
+        return minutes;
+    }
 
     //check if the inputted time is within the appropriate bounds
     public static boolean checkTime(int h, int m) {
@@ -141,7 +149,24 @@ class logSleep{
     // draw method
 }
 
-class SleepRecommendation {
+class SleepRecommendation{
+    //gives recommended time to go to sleep
+    private Time wakeTime;
+    private Time bedTime;
+    private int age;
+    private int sleepGoal;
+    public SleepRecommendation(Time wakeTime, Time bedTime, int age, int sleepGoal){
+        this.wakeTime = wakeTime;
+        this.bedTime = bedTime;
+        this.age = age;
+        this.sleepGoal = sleepGoal;
+    }
+    public String calculateSleepRec(){
+        int sleepRecMins = (wakeTime.getMinutes() + 15);    // takes 15 mins to fall asleep
+        int sleepRecHours = (wakeTime.getHour() - sleepGoal);
+        Time sleeprec = new Time(sleepRecHours, sleepRecMins);
+        return sleeprec.toString();
+    }
 
 }
 
@@ -194,7 +219,7 @@ class SleepNode{
     private Time wakeTime;
     private int duration;
     //get the day of the week based on the date
-    
+
     public SleepNode(Time bedtime, Time wake){
         bedTime = bedtime;
         wakeTime = wake;
