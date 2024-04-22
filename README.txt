@@ -1,1 +1,7 @@
-[detailed description of how to compile, run, and use your program]
+To compile, type the command:
+javac *.java
+
+To run, type:
+java Main
+
+To use the program:
