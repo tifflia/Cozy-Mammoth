@@ -154,14 +154,16 @@ class SleepRecommendation{
     private Time bedTime;
     private int age;
     private int sleepGoal;
+
     public SleepRecommendation(Time wakeTime, Time bedTime, int age, int sleepGoal){
         this.wakeTime = wakeTime;
         this.bedTime = bedTime;
         this.age = age;
         this.sleepGoal = sleepGoal;
     }
+    //will implement more complex algorithms later (considering rem cycle, etc)
     public String calculateSleepRec(){
-        int sleepRecMins = (wakeTime.getMinutes() + 15);    // takes 15 mins to fall asleep
+        int sleepRecMins = (wakeTime.getMinutes() - 15);    // takes 15 mins to fall asleep
         int sleepRecHours = (wakeTime.getHour() - sleepGoal);
         Time sleeprec = new Time(sleepRecHours, sleepRecMins);
         return sleeprec.toString();
