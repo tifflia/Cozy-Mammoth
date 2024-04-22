@@ -3,7 +3,6 @@ import java.awt.Graphics;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
-
 import java.util.ArrayList;
 import java.util.Random;
 import java.awt.Graphics2D;
@@ -167,7 +166,6 @@ class SleepRecommendation{
         Time sleeprec = new Time(sleepRecHours, sleepRecMins);
         return sleeprec.toString();
     }
-
 }
 
 class SleepHistory{
