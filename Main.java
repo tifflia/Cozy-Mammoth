@@ -119,11 +119,11 @@ class Time{
     }
 }
 
-class logSleep{
+class LogSleep{
     private int wakeTime;
     private int sleepTime;
 
-    public logSleep(int sleepTime, int wakeTime) {
+    public LogSleep(int sleepTime, int wakeTime) {
         this.sleepTime = sleepTime;
         this.wakeTime = wakeTime;
     }
