@@ -11,8 +11,8 @@ import java.util.Date;
 public class Main{
     public static void main(String[] args){
         //testing user and time class
-        Time bedTime = new Time(0, 30);
-        Time wakeTime = new Time(8, 30);
+        Time bedTime = new Time(0, 00);
+        Time wakeTime = new Time(8, 00);
         User testUser = new User("John Doe", 20, 8, bedTime, wakeTime);
         System.out.println("bedtime goal: " + testUser.getBedTime());
         System.out.println("wake up goal: " + testUser.getWakeTime());
@@ -170,36 +170,50 @@ class SleepRecommendation{
     public String calculateSleepRec(){
         int sleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
         int sleepRecHours = (wakeTime.getHour() - sleepGoal);
+        if (sleepRecMins < 0){
+            sleepRecMins = 60 - Math.abs(sleepRecMins);
+            sleepRecHours =- 1;
+        }
+        if (sleepRecHours < 0){
+            sleepRecHours = 24 + sleepRecHours;
+        }
         Time sleeprec = new Time(sleepRecHours, sleepRecMins);
         return sleeprec.toString();
     }
 
-    public String calculateAgeSleepRec(){   //in progress, updated ver of above
-        int sleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
-        int sleepRecHours = (wakeTime.getHour() - sleepGoal);
-        Time sleeprec = new Time(sleepRecHours, sleepRecMins);
-        String toreturn = sleeprec.toString();
-        //now check if best, and calculate other options
-        int[] userAgeSleepHours = getAgeSleepHours();
-        boolean matchAge = true;
+    // public String calculateAgeSleepRec(){   //in progress, updated ver of above
+    //     int sleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
+    //     int sleepRecHours = (wakeTime.getHour() - sleepGoal);
+    //     if (sleepRecMins < 0){
+    //         sleepRecMins = 60 - Math.abs(sleepRecMins);
+    //         sleepRecHours =- 1;
+    //     }
+    //     if (sleepRecHours < 0){
+    //         sleepRecHours = 12 + sleepRecHours;
+    //     }
+    //     Time sleeprec = new Time(sleepRecHours, sleepRecMins);
+    //     String toreturn = sleeprec.toString();
+    //     //now check if best, and calculate other options
+    //     int[] userAgeSleepHours = getAgeSleepHours();
+    //     boolean matchAge = true;
         
-        for (int i = 0; i < userAgeSleepHours.length; i++){
-            if (sleepGoal == userAgeSleepHours[i]){     //goal hours matches recommendation for age
+    //     for (int i = 0; i < userAgeSleepHours.length; i++){
+    //         if (sleepGoal == userAgeSleepHours[i]){     //goal hours matches recommendation for age
            
-            }
-            else{matchAge = false;}
-        }
-        if (matchAge = false){  //check other hours in age range
-            for (int i = 0; i < userAgeSleepHours.length; i++){
+    //         }
+    //         else{matchAge = false;}
+    //     }
+    //     if (matchAge = false){  //check other hours in age range
+    //         for (int i = 0; i < userAgeSleepHours.length; i++){
 
-            }
-        }
+    //         }
+    //     }
         //Best Recommendation using goal sleep hours, wake up time and sleep time.
         //Checks if fits with recommended sleep hours according to age
             // check duration/hours, ie: if recommendation is 8, make sure fits with recommendation for age)
 
 
-    }
+  //  }
 
     public int[] getAgeSleepHours(){    
         //get recommended hours of sleep by age
