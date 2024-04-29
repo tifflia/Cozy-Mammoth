@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.awt.Graphics2D;
 import java.util.Date;
+import java.util.Scanner;
 
 public class Main{
     public static void main(String[] args){
@@ -19,8 +20,11 @@ public class Main{
         SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal());
         System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
         SleepNode testMonday = new SleepNode(bedTime, wakeTime);
-        SleepHistory testHistory = new SleepHistory(testMonday);
-        System.out.println(testHistory.getAverageDuration());   //fix
+        SleepJournal test = new SleepJournal();
+        System.out.println(test);
+        SleepHistory testHistory = new SleepHistory(testMonday, test);
+        //fix
+        System.out.println(testHistory.getAverageDuration());
 
     
     }
@@ -125,6 +129,7 @@ class Time{
 }
 
 class LogSleep{
+
     private int wakeTime;
     private int sleepTime;
 
@@ -150,8 +155,25 @@ class LogSleep{
         this.wakeTime = wakeTime;
     }
 
+
     // draw method
 }
+class SleepJournal{
+    private String sleepJournal;
+    public SleepJournal(){
+        //user can type into console
+        Scanner journal = new Scanner(System.in);
+        String s = journal.nextLine();
+        this.sleepJournal = s;
+        }
+
+        //maybe easier to just have String parameter instead of user input?
+        //alternative
+//        public SleepJournal(String journal){
+//            this.sleepJournal = journal;
+//        }
+    }
+
 
 class SleepRecommendation{
     //gives recommended time to go to sleep
@@ -250,15 +272,24 @@ class SleepHistory{
     private int averageSleepDuration;
     ArrayList<SleepNode> sleepHistory = new ArrayList<SleepNode>();
 
-    public SleepHistory(SleepNode day){
+    ArrayList<SleepJournal> sleepNotes = new ArrayList<>();
+
+
+
+    public SleepHistory(SleepNode day, SleepJournal note){
         // set null
         // make it add the day (figure out how to keep day of week in SleepNode)
         sleepHistory.add(day);
+        sleepNotes.add(note);
     }
 
     //add data to sleep history
     public void addDay(SleepNode day){
         sleepHistory.add(day);
+    }
+
+    public void addNote(SleepJournal note){
+        sleepNotes.add(note);
     }
   
     //calculate average sleep time
