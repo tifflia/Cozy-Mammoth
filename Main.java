@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Date;
+import java.util.Scanner;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 
@@ -31,13 +32,21 @@ public class Main extends JPanel implements MouseListener{
 
     public static void main(String[] args){
         //testing user and time class
-        Time bedTime = new Time(0, 30);
-        Time wakeTime = new Time(8, 30);
+        Time bedTime = new Time(0, 00);
+        Time wakeTime = new Time(8, 00);
         User testUser = new User("John Doe", 20, 8, bedTime, wakeTime);
         System.out.println("bedtime goal: " + testUser.getBedTime());
         System.out.println("wake up goal: " + testUser.getWakeTime());
         SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal());
         System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
+        SleepNode testMonday = new SleepNode(bedTime, wakeTime);
+        SleepJournal test = new SleepJournal();
+        System.out.println(test);
+        SleepHistory testHistory = new SleepHistory(testMonday, test);
+        //fix
+        System.out.println(testHistory.getAverageDuration());
+
+    
 
         //jframe stuff
         JFrame frame = new JFrame("CozyMammoth");
@@ -124,13 +133,13 @@ public class Main extends JPanel implements MouseListener{
 
 class User{
     private String name;
-    private int age;
+    private double age;
     private int sleepGoal;
     private Time bedTime;
     private Time wakeTime;
 
     //constructor
-    public User(String userName, int userAge, int sleep, Time bed, Time wake) {
+    public User(String userName, double userAge, int sleep, Time bed, Time wake) {
         name = userName;
         age = userAge;
         sleepGoal = sleep;
@@ -144,10 +153,10 @@ class User{
     public String getName() {
         return name;
     }
-    public void setAge(int newAge) {
+    public void setAge(double newAge) {
         age = newAge;
     }
-    public int getAge() {
+    public double getAge() {
         return age;
     }
     public void setSleepGoal(int newGoal) {
@@ -221,6 +230,7 @@ class Time{
 }
 
 class LogSleep{
+
     private int wakeTime;
     private int sleepTime;
 
@@ -246,17 +256,34 @@ class LogSleep{
         this.wakeTime = wakeTime;
     }
 
+
     // draw method
 }
+class SleepJournal{
+    private String sleepJournal;
+    public SleepJournal(){
+        //user can type into console
+        Scanner journal = new Scanner(System.in);
+        String s = journal.nextLine();
+        this.sleepJournal = s;
+        }
+
+        //maybe easier to just have String parameter instead of user input?
+        //alternative
+//        public SleepJournal(String journal){
+//            this.sleepJournal = journal;
+//        }
+    }
+
 
 class SleepRecommendation{
     //gives recommended time to go to sleep
     private Time wakeTime;
     private Time bedTime;
-    private int age;
+    private double age;
     private int sleepGoal;
 
-    public SleepRecommendation(Time wakeTime, Time bedTime, int age, int sleepGoal){
+    public SleepRecommendation(Time wakeTime, Time bedTime, double age, int sleepGoal){
         this.wakeTime = wakeTime;
         this.bedTime = bedTime;
         this.age = age;
@@ -264,10 +291,80 @@ class SleepRecommendation{
     }
     //will implement more complex algorithms later (considering rem cycle, etc)
     public String calculateSleepRec(){
-        int sleepRecMins = (wakeTime.getMinutes() - 15);    // takes 15 mins to fall asleep
+        int sleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
         int sleepRecHours = (wakeTime.getHour() - sleepGoal);
+        if (sleepRecMins < 0){
+            sleepRecMins = 60 - Math.abs(sleepRecMins);
+            sleepRecHours =- 1;
+        }
+        if (sleepRecHours < 0){
+            sleepRecHours = 24 + sleepRecHours;
+        }
         Time sleeprec = new Time(sleepRecHours, sleepRecMins);
         return sleeprec.toString();
+    }
+
+    // public String calculateAgeSleepRec(){   //in progress, updated ver of above
+    //     int sleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
+    //     int sleepRecHours = (wakeTime.getHour() - sleepGoal);
+    //     if (sleepRecMins < 0){
+    //         sleepRecMins = 60 - Math.abs(sleepRecMins);
+    //         sleepRecHours =- 1;
+    //     }
+    //     if (sleepRecHours < 0){
+    //         sleepRecHours = 12 + sleepRecHours;
+    //     }
+    //     Time sleeprec = new Time(sleepRecHours, sleepRecMins);
+    //     String toreturn = sleeprec.toString();
+    //     //now check if best, and calculate other options
+    //     int[] userAgeSleepHours = getAgeSleepHours();
+    //     boolean matchAge = true;
+        
+    //     for (int i = 0; i < userAgeSleepHours.length; i++){
+    //         if (sleepGoal == userAgeSleepHours[i]){     //goal hours matches recommendation for age
+           
+    //         }
+    //         else{matchAge = false;}
+    //     }
+    //     if (matchAge = false){  //check other hours in age range
+    //         for (int i = 0; i < userAgeSleepHours.length; i++){
+
+    //         }
+    //     }
+        //Best Recommendation using goal sleep hours, wake up time and sleep time.
+        //Checks if fits with recommended sleep hours according to age
+            // check duration/hours, ie: if recommendation is 8, make sure fits with recommendation for age)
+
+
+  //  }
+
+    public int[] getAgeSleepHours(){    
+        //get recommended hours of sleep by age
+        if (age <= 0.25){ //newborn
+            return new int[] {14,15,16,17};  //hours recommended
+        }
+        else if (age > 0.25 && age < 1){ //infant
+            return new int[] {12,13,14,15,16};
+        }
+        else if (age >= 1 && age <= 2){  //toddler
+            return new int[] {11,12,13,14};
+        }
+        else if (age >= 3 && age <= 5){  //preschool
+            return new int[] {10,11,12,13};
+        }
+        else if (age >= 6 && age <= 12){  //school age
+            return new int[] {9,10,11,12};
+        }
+        else if (age >= 13 && age <= 18){  //teen
+            return new int[] {8,9,10};
+        }
+        else if (age >= 18 && age <= 64){  //adult
+            return new int[] {7,8,9};
+        }
+        else if (age >= 65){  //older adult
+            return new int[] {7,8};
+        }
+        return null;
     }
 }
 
@@ -276,17 +373,28 @@ class SleepHistory{
     private int averageSleepDuration;
     ArrayList<SleepNode> sleepHistory = new ArrayList<SleepNode>();
 
-    public SleepHistory(SleepNode day){
+    ArrayList<SleepJournal> sleepNotes = new ArrayList<>();
+
+
+
+    public SleepHistory(SleepNode day, SleepJournal note){
         // set null
+        // make it add the day (figure out how to keep day of week in SleepNode)
+        sleepHistory.add(day);
+        sleepNotes.add(note);
     }
 
     //add data to sleep history
     public void addDay(SleepNode day){
         sleepHistory.add(day);
     }
+
+    public void addNote(SleepJournal note){
+        sleepNotes.add(note);
+    }
   
     //calculate average sleep time
-    public void getAverageDuration(){
+    public void calculateAverageDuration(){
         int total = 0;
         for (SleepNode day : sleepHistory){
             total += day.getDuration();
@@ -295,7 +403,7 @@ class SleepHistory{
     }
 
     //getter for average sleep
-    public int getAverageSleepDuration(){
+    public int getAverageDuration(){
         return averageSleepDuration;
     }
 
