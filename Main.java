@@ -40,9 +40,9 @@ public class Main extends JPanel implements MouseListener{
         SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal());
         System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
         SleepNode testMonday = new SleepNode(bedTime, wakeTime);
-        SleepJournal test = new SleepJournal();
-        System.out.println(test);
-        SleepHistory testHistory = new SleepHistory(testMonday, test);
+        SleepJournal testJournal = new SleepJournal();
+        System.out.println(testJournal.getJournal());
+        SleepHistory testHistory = new SleepHistory(testMonday, testJournal);
         //fix
         System.out.println(testHistory.getAverageDuration());
 
@@ -112,7 +112,14 @@ public class Main extends JPanel implements MouseListener{
     }
 
     //don't need a run method, but need methods to listen to the buttons that are pressed/mouse clicks
-    public void mousePressed(MouseEvent e) {}
+    public void mousePressed(MouseEvent e) {
+        System.out.println("Mouse pressed");
+        //if no User has been initialized, draw the NewUser page
+        if(user == null) {
+            drawNewUser();
+        }
+        //otherwise, continue to home page
+    }
 
     public void mouseReleased(MouseEvent e) {}
 
@@ -122,11 +129,6 @@ public class Main extends JPanel implements MouseListener{
 
     public void mouseClicked(MouseEvent e) {
         System.out.println("Mouse clicked (# of clicks: " + e.getClickCount() + ") detected on " + e.getComponent().getClass().getName() + ".");
-        //if no User has been initialized, draw the NewUser page
-        if(user == null) {
-            drawNewUser();
-        }
-        //otherwise, continue to home page
     }
 }
 
@@ -262,9 +264,16 @@ class SleepJournal{
     private String sleepJournal;
     public SleepJournal(){
         //user can type into console
-        Scanner journal = new Scanner(System.in);
-        String s = journal.nextLine();
+        Scanner input = new Scanner(System.in);
+        System.out.print("Enter a sleep journal entry: ");
+        String s = input.nextLine();
         this.sleepJournal = s;
+    }
+    public void setJournal(String s) {
+        sleepJournal = s;
+    }
+    public String getJournal() {
+        return sleepJournal;
     }
 
         //maybe easier to just have String parameter instead of user input?
