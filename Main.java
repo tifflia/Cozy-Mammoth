@@ -46,7 +46,6 @@ public class Main extends JPanel implements MouseListener{
         //fix
         System.out.println(testHistory.getAverageDuration());
 
-    
 
         //jframe stuff
         JFrame frame = new JFrame("CozyMammoth");
@@ -266,14 +265,14 @@ class SleepJournal{
         Scanner journal = new Scanner(System.in);
         String s = journal.nextLine();
         this.sleepJournal = s;
-        }
+    }
 
         //maybe easier to just have String parameter instead of user input?
         //alternative
 //        public SleepJournal(String journal){
 //            this.sleepJournal = journal;
 //        }
-    }
+}
 
 
 class SleepRecommendation{
