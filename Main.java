@@ -1,14 +1,34 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+import java.awt.GraphicsEnvironment; //testing font
 import java.awt.Dimension;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Random;
-import java.awt.Graphics2D;
 import java.util.Date;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 
-public class Main{
+public class Main extends JPanel implements MouseListener{
+    public static final int WIDTH = 500;
+    public static final int HEIGHT = 750;
+    User user;
+    //field for each page (kinda like having multiple "Worlds" from the other homeworks)
+
+    //constructor
+    public Main() {
+        addMouseListener(this);
+        this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        //initialize the pages
+    }
+
     public static void main(String[] args){
         //testing user and time class
         Time bedTime = new Time(0, 30);
@@ -18,6 +38,87 @@ public class Main{
         System.out.println("wake up goal: " + testUser.getWakeTime());
         SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal());
         System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
+
+        //jframe stuff
+        JFrame frame = new JFrame("CozyMammoth");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Main mainInstance = new Main();
+        frame.setContentPane(mainInstance);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        //draw the welcome screen
+        Color bg = new Color(60, 86, 166);
+        g.setColor(bg);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+        try {
+            BufferedImage logo = ImageIO.read(new File("logo.png"));
+            g.drawImage(logo,100,150,300,300,null);
+            Font title = Font.createFont(Font.TRUETYPE_FONT, new File("Rubik.ttf"));
+            g.setColor(Color.WHITE);
+            g.setFont(title);
+            g.drawString("Cozy Mammoth",0,400);
+            //FIGURE OUT FONT LATER
+        }
+        catch (FontFormatException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) { 
+            e.printStackTrace();
+        }
+
+        //add a buffer of sorts?
+        //mouseclicked
+    }
+
+    public void drawNewUser() {
+        Graphics g = this.getGraphics();
+        Color bg = new Color(37,44,64);
+        g.setColor(bg);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        //figure out jframe jcomponent stuff
+
+        // g.setColor(Color.WHITE);
+        // JLabel label1, label2, label3, label4, label5;
+        // JButton button;
+        // JTextField text1, text2, text3, text4, text5;
+        // button = new JButton("Done");
+        // label1 = new JLabel("Name");
+        // label2 = new JLabel("Age");
+        // label3 = new JLabel("Sleep Goal");
+        // label4 = new JLabel("Bedtime");
+        // label5 = new JLabel("Wake Up");
+        // text1 = new JTextField(20);
+        // text2 = new JTextField(20);
+        // text3 = new JTextField(20);
+        // text4 = new JTextField(20);
+        // text5 = new JTextField(20);
+        // label1.setBounds(50,50,100,30);
+        // this.add(label1);
+        // this.setVisible(true);
+    }
+
+    //don't need a run method, but need methods to listen to the buttons that are pressed/mouse clicks
+    public void mousePressed(MouseEvent e) {}
+
+    public void mouseReleased(MouseEvent e) {}
+
+    public void mouseEntered(MouseEvent e) {}
+
+    public void mouseExited(MouseEvent e) {}
+
+    public void mouseClicked(MouseEvent e) {
+        System.out.println("Mouse clicked (# of clicks: " + e.getClickCount() + ") detected on " + e.getComponent().getClass().getName() + ".");
+        //if no User has been initialized, draw the NewUser page
+        if(user == null) {
+            drawNewUser();
+        }
+        //otherwise, continue to home page
     }
 }
 
@@ -235,7 +336,7 @@ class SleepNode{
     }
 
     public void calculateDuration(Time sleepTime, Time wakeTime){
-        // turn sleeptime and wake time to int, calcualte duration
+        // turn sleeptime and wake time to int, calculate duration
         // duration = 
     }
 
