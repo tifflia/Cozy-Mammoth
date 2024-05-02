@@ -24,13 +24,22 @@ public class Main extends JPanel implements MouseListener{
     //field for each page (kinda like having multiple "Worlds" from the other homeworks)
 
     //constructor
-    public Main() {
+    public Main(){
         addMouseListener(this);
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         //initialize the pages
     }
 
     public static void main(String[] args){
+        //jframe stuff
+        JFrame frame = new JFrame("CozyMammoth");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Main mainInstance = new Main();
+        frame.setContentPane(mainInstance);
+        frame.pack();
+        frame.setVisible(true);
+
+
         //testing user and time class
         Time bedTime = new Time(0, 00);
         Time wakeTime = new Time(8, 00);
@@ -45,15 +54,6 @@ public class Main extends JPanel implements MouseListener{
         SleepHistory testHistory = new SleepHistory(testMonday, testJournal);
         //fix
         System.out.println(testHistory.getAverageDuration());
-
-
-        //jframe stuff
-        JFrame frame = new JFrame("CozyMammoth");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        Main mainInstance = new Main();
-        frame.setContentPane(mainInstance);
-        frame.pack();
-        frame.setVisible(true);
     }
 
     public void paintComponent(Graphics g) {
@@ -80,7 +80,7 @@ public class Main extends JPanel implements MouseListener{
         }
 
         //add a buffer of sorts?
-        //mouseclicked
+        //MousePressed as a buffer? or make it execute a loading animation of sorts
     }
 
     public void drawNewUser() {
@@ -231,7 +231,6 @@ class Time{
 }
 
 class LogSleep{
-
     private int wakeTime;
     private int sleepTime;
 
@@ -260,6 +259,7 @@ class LogSleep{
 
     // draw method
 }
+
 class SleepJournal{
     private String sleepJournal;
     public SleepJournal(){
