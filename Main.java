@@ -28,6 +28,7 @@ public class Main extends JPanel implements MouseListener{
         addMouseListener(this);
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         //initialize the pages
+        System.out.println("The constructor just ran.");
     }
 
     public static void main(String[] args){
