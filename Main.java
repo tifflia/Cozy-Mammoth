@@ -382,7 +382,7 @@ class SleepHistory{
     private int averageSleepDuration;
     ArrayList<SleepNode> sleepHistory = new ArrayList<SleepNode>();
 
-    ArrayList<SleepJournal> sleepNotes = new ArrayList<>();
+    //ArrayList<SleepJournal> sleepNotes = new ArrayList<>();
 
 
 
@@ -390,7 +390,7 @@ class SleepHistory{
         // set null
         // make it add the day (figure out how to keep day of week in SleepNode)
         sleepHistory.add(day);
-        sleepNotes.add(note);
+        //sleepNotes.add(note);
     }
 
     //add data to sleep history
@@ -398,9 +398,9 @@ class SleepHistory{
         sleepHistory.add(day);
     }
 
-    public void addNote(SleepJournal note){
-        sleepNotes.add(note);
-    }
+    // public void addNote(SleepJournal note){
+    //     sleepNotes.add(note);
+    // }
   
     //calculate average sleep time
     public void calculateAverageDuration(){
@@ -436,11 +436,16 @@ class SleepNode{
     private Time bedTime;
     private Time wakeTime;
     private int duration;
+    private String sleepNote;
+    private int sleepQuality;
+    // add sleep journal -- notes, and quslity of sleep
     //get the day of the week based on the date
 
-    public SleepNode(Time bedtime, Time wake){
+    public SleepNode(Time bedtime, Time wake, String sleepJournal, int sleepRating){
         bedTime = bedtime;
         wakeTime = wake;
+        sleepNote = sleepJournal;
+        sleepQuality = sleepRating;
     }
     // getters
 
