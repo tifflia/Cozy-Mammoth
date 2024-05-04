@@ -311,8 +311,6 @@ class LogSleep {
     }
 }
 
-    // draw method
-
 class SleepRecommendation{
     //gives recommended time to go to sleep
     private Time wakeTime;
@@ -507,71 +505,68 @@ class DayNode{
 }
 
 class Schedule{
-ArrayList<Event> calendar;
+    ArrayList<Event> calendar;
 
-public Schedule(){
-    ArrayList<Event> calendar = new ArrayList<>();
-
-}
-
-public void addEvent(DayNode a, Event e){
-    int i=0;
-    while(e.compareto(calendar.get(i))==1){
-        i++;
+    public Schedule(){
+        ArrayList<Event> calendar = new ArrayList<>();
     }
-    calendar.add(i, e);
-}
 
+    public void addEvent(DayNode a, Event e){
+        int i=0;
+        while(e.compareto(calendar.get(i))==1){
+            i++;
+        }
+        calendar.add(i, e);
+    }
 }
 
 class Event{
+    Time start;
+    Time end;
+    boolean repeating;
+    String title;
 
-Time start;
-Time end;
-boolean repeating;
-String title;
+    public Event(Time s, Time e, boolean r, String t){
 
-public Event(Time s, Time e, boolean r, String t){
-
-    start = s;
-    end = e;
-    repeating = r;
-    title = t;
-}
-
-public int compareto(Event other){
-    if(this.start.meridiem=="AM" && other.start.meridiem == "PM"){
-        return -1;
+        start = s;
+        end = e;
+        repeating = r;
+        title = t;
     }
-    if(this.start.meridiem=="PM" && other.start.meridiem == "AM"){
-        return 1;
-    }
-    else {
-        if (this.start.hours > other.start.hours) {
-            return 1;
-        }
-        if (this.start.hours < other.start.hours) {
+
+    public int compareto(Event other){
+        if(this.start.meridiem=="AM" && other.start.meridiem == "PM"){
             return -1;
         }
-        if (this.start.hours == other.start.hours) {
+        if(this.start.meridiem=="PM" && other.start.meridiem == "AM"){
+            return 1;
+        }
+        else {
             if (this.start.hours > other.start.hours) {
                 return 1;
             }
-            if (this.start.minutes < other.start.minutes) {
+            if (this.start.hours < other.start.hours) {
                 return -1;
             }
+            if (this.start.hours == other.start.hours) {
+                if (this.start.hours > other.start.hours) {
+                    return 1;
+                }
+                if (this.start.minutes < other.start.minutes) {
+                    return -1;
+                }
+            }
+            return 0;
         }
-        return 0;
-    }
 
-    //first check if one is am or pm
-    //if other is am and this is pm, return 1
-    //if other is pm and this is am return -1
-    //if they are both one or the other, go into conditionals within the conditional that checks if they are the same
-    //three conditionals within this one, one that checks this.start.hours<other.start.hours, one that checks this.start.hours<other.start.hours
-    //and one that checks this.start.hours==other.start.hours
-    //if they equal eachother then you want to have three more conditionals within that one, checking the same thing as the other three but this time with minutes
-    //for all of these conditions, return -1 for less than, 1 for greater than, and 0 for equals
+        //first check if one is am or pm
+        //if other is am and this is pm, return 1
+        //if other is pm and this is am return -1
+        //if they are both one or the other, go into conditionals within the conditional that checks if they are the same
+        //three conditionals within this one, one that checks this.start.hours<other.start.hours, one that checks this.start.hours<other.start.hours
+        //and one that checks this.start.hours==other.start.hours
+        //if they equal eachother then you want to have three more conditionals within that one, checking the same thing as the other three but this time with minutes
+        //for all of these conditions, return -1 for less than, 1 for greater than, and 0 for equals
 
-    }
+        }
 }
