@@ -1,16 +1,66 @@
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Dimension;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.*;
+
 import java.util.ArrayList;
 import java.util.Random;
-import java.awt.Graphics2D;
 import java.util.Date;
 import java.util.Scanner;
 
-public class Main{
+public class Main extends JPanel implements MouseListener{
+    public static final int WIDTH = 500;
+    public static final int HEIGHT = 750;
+
+    User user;
+
+    static JFrame frame = new JFrame("CozyMammoth");
+
+    //App Pages
+    JPanel Welcome = new JPanel();
+    JPanel NewUser = new JPanel();
+    JPanel Home = new JPanel();
+    JPanel SleepHistory = new JPanel();
+    JPanel LogSleep1 = new JPanel();
+    JPanel LogSleep2 = new JPanel();
+    JPanel SleepRecs = new JPanel();
+    JPanel Schedule = new JPanel();
+    JPanel Settings = new JPanel();
+    //CardLayout to manage JPanel "pages"
+    CardLayout cl = new CardLayout();
+
+    //constructor
+    public Main(){
+        addMouseListener(this);
+        this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+
+        //initialize JPanels
+        initWelcome();
+    }
+
     public static void main(String[] args){
+        //jframe stuff
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
+        Main mainInstance = new Main();
+        
+        mainInstance.setLayout(mainInstance.cl);
+        mainInstance.add(mainInstance.Welcome, "1");
+        //continue adding panels
+
+        frame.setContentPane(mainInstance); //showing Welcome because it's the first panel added(?)
+        frame.pack();
+        frame.setVisible(true);
+
+
         //testing user and time class
         Time bedTime = new Time(0, 00);
         Time wakeTime = new Time(8, 00);
@@ -19,15 +69,111 @@ public class Main{
         System.out.println("wake up goal: " + testUser.getWakeTime());
         SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal());
         System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
-        SleepNode testMonday = new SleepNode(bedTime, wakeTime);
-        SleepJournal test = new SleepJournal();
-        System.out.println(test);
-        SleepHistory testHistory = new SleepHistory(testMonday, test);
+        SleepNode testMonday = new SleepNode(bedTime, wakeTime, "I woke up very refreshed.", 5);
+        SleepJournal testJournal = new SleepJournal();
+        System.out.println(testJournal.getJournal());
+        SleepHistory testHistory = new SleepHistory(testMonday, testJournal);
         //fix
         System.out.println(testHistory.getAverageDuration());
-
-    
     }
+
+    // //do you need this? if we have initWelcome
+    // public void paintComponent(Graphics g) {
+    //     super.paintComponent(g);
+
+    //     //draw the welcome screen
+    //     Color bg = new Color(60, 86, 166);
+    //     g.setColor(bg);
+    //     g.fillRect(0, 0, WIDTH, HEIGHT);
+
+    //     try {
+    //         BufferedImage logo = ImageIO.read(new File("logo.png"));
+    //         g.drawImage(logo,100,150,300,300,null);
+    //         // Font title = Font.createFont(Font.TRUETYPE_FONT, new File("Rubik.ttf"));
+    //         // g.setColor(Color.WHITE);
+    //         // g.setFont(title);
+    //         // g.drawString("Cozy Mammoth",0,400);
+    //         // // FIGURE OUT FONT LATER
+    //     }
+    //     // catch (FontFormatException e) {
+    //     //     e.printStackTrace();
+    //     // }
+    //     catch (IOException e) { 
+    //         e.printStackTrace();
+    //     }
+
+    //     //add a buffer of sorts?
+    //     //MousePressed as a buffer? or make it execute a loading animation of sorts
+    // }
+
+    private void initWelcome() {
+        Color bg = new Color(60, 86, 166);
+        this.Welcome.setBackground(bg);
+
+        JLabel title = new JLabel("Cozy Mammoth");
+        this.Welcome.add(title);
+
+        title.setForeground(Color.WHITE);
+        title.setFont(new Font("Sans-serif", Font.BOLD, 40));
+        title.setHorizontalTextPosition(JLabel.CENTER);
+        title.setVerticalTextPosition(JLabel.BOTTOM);
+
+        //resizing logo
+        ImageIcon logo = new ImageIcon("logo.png");
+        Image image = logo.getImage(); //transform it 
+        Image newimg = image.getScaledInstance(300, 300, java.awt.Image.SCALE_SMOOTH); //scale down
+        logo = new ImageIcon(newimg); //transform back
+        title.setIcon(logo);
+
+        title.setIconTextGap(20);
+    }
+
+    //New User welcome page (WIP)
+    public void initNewUser() {
+        System.out.println("initUser called...");
+        Graphics g = this.getGraphics();
+        Color bg = new Color(37,44,64);
+        g.setColor(bg);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        //figure out jframe jcomponent stuff
+        JLabel label1; //label2, label3, label4, label5;
+        JButton button;
+        JTextField text1; //text2, text3, text4, text5;
+        button = new JButton("Done");
+        label1 = new JLabel("Name");
+        // label2 = new JLabel("Age");
+        // label3 = new JLabel("Sleep Goal");
+        // label4 = new JLabel("Bedtime");
+        // label5 = new JLabel("Wake Up");
+        text1 = new JTextField(20);
+        // text2 = new JTextField(20);
+        // text3 = new JTextField(20);
+        // text4 = new JTextField(20);
+        // text5 = new JTextField(20);
+        label1.setBounds(0,0,100,30);
+        this.add(label1);
+        System.out.println(label1.isVisible());
+    }
+
+    //MOUSELISTENER THINGS
+    public void mousePressed(MouseEvent e) {
+        System.out.println("Mouse pressed detected on " + e.getComponent().getClass().getName() + ".");
+        //how to access the cardlayout from here if you need the mainInstance's cardlayout???
+        
+        // //if no User has been initialized, pull up the NewUser panel
+        // if(user == null) {
+        
+        // }
+        // //otherwise, pull up the Home Panel
+        // else {
+            
+        // }
+    }
+    public void mouseReleased(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {}
 }
 
 class User{
@@ -129,7 +275,6 @@ class Time{
 }
 
 class LogSleep{
-
     private int wakeTime;
     private int sleepTime;
 
@@ -158,21 +303,29 @@ class LogSleep{
 
     // draw method
 }
+
 class SleepJournal{
     private String sleepJournal;
     public SleepJournal(){
         //user can type into console
-        Scanner journal = new Scanner(System.in);
-        String s = journal.nextLine();
+        Scanner input = new Scanner(System.in);
+        System.out.print("Enter a sleep journal entry: ");
+        String s = input.nextLine();
         this.sleepJournal = s;
-        }
+    }
+    public void setJournal(String s) {
+        sleepJournal = s;
+    }
+    public String getJournal() {
+        return sleepJournal;
+    }
 
         //maybe easier to just have String parameter instead of user input?
         //alternative
 //        public SleepJournal(String journal){
 //            this.sleepJournal = journal;
 //        }
-    }
+}
 
 
 class SleepRecommendation{
@@ -272,7 +425,7 @@ class SleepHistory{
     private int averageSleepDuration;
     ArrayList<SleepNode> sleepHistory = new ArrayList<SleepNode>();
 
-    ArrayList<SleepJournal> sleepNotes = new ArrayList<>();
+    //ArrayList<SleepJournal> sleepNotes = new ArrayList<>();
 
 
 
@@ -280,7 +433,7 @@ class SleepHistory{
         // set null
         // make it add the day (figure out how to keep day of week in SleepNode)
         sleepHistory.add(day);
-        sleepNotes.add(note);
+        //sleepNotes.add(note);
     }
 
     //add data to sleep history
@@ -288,9 +441,9 @@ class SleepHistory{
         sleepHistory.add(day);
     }
 
-    public void addNote(SleepJournal note){
-        sleepNotes.add(note);
-    }
+    // public void addNote(SleepJournal note){
+    //     sleepNotes.add(note);
+    // }
   
     //calculate average sleep time
     public void calculateAverageDuration(){
@@ -326,11 +479,17 @@ class SleepNode{
     private Time bedTime;
     private Time wakeTime;
     private int duration;
+    private String sleepNote;
+    private int sleepQuality;
+    // add sleep journal -- notes, and quslity of sleep
     //get the day of the week based on the date
 
-    public SleepNode(Time bedtime, Time wake){
-        bedTime = bedtime;
+    public SleepNode(Time bed, Time wake, String note, int sleepRating){
+        bedTime = bed;
         wakeTime = wake;
+        sleepNote = note;
+        sleepQuality = sleepRating;
+        this.calculateDuration(bed, wake);
     }
     // getters
 
@@ -343,7 +502,7 @@ class SleepNode{
     }
 
     public void calculateDuration(Time sleepTime, Time wakeTime){
-        // turn sleeptime and wake time to int, calcualte duration
+        // turn sleeptime and wake time to int, calculate duration
         // duration = 
     }
 
