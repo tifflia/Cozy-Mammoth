@@ -70,9 +70,13 @@ public class Main extends JPanel implements MouseListener{
         // SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal());
         //System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
         SleepNode testMonday = new SleepNode(bedTime, wakeTime, "I woke up very refreshed.", 5);
+<<<<<<< HEAD
         SleepJournal testJournal = new SleepJournal();
         System.out.println(testJournal.getJournal());
         // SleepHistory testHistory = new SleepHistory(testMonday, testJournal);
+=======
+        SleepHistory testHistory = new SleepHistory(testMonday);
+>>>>>>> 841816da724e5e99430b9cf2c96c651aabb89538
         //fix
         // System.out.println(testHistory.getAverageDuration());
     }
@@ -226,9 +230,9 @@ class User{
 
 class Time{
     //calculated in military time
-    private int hours; //0-24 (excluded)
-    private int minutes;//0-60 (excluded)
-    private String meridiem; //AM or PM
+     int hours; //0-24 (excluded)
+     int minutes;//0-60 (excluded)
+     String meridiem; //AM or PM
 
     //constructor
     public Time(int h, int m) {
@@ -274,7 +278,7 @@ class Time{
     }
 }
 
-class LogSleep{
+class LogSleep {
     private int wakeTime;
     private int sleepTime;
 
@@ -284,7 +288,7 @@ class LogSleep{
     }
 
     //Getter and setter methods for sleep time and wake time
-    public int getSleepTime(){
+    public int getSleepTime() {
         return sleepTime;
     }
 
@@ -300,33 +304,18 @@ class LogSleep{
         this.wakeTime = wakeTime;
     }
 
-
-    // draw method
-}
-
-class SleepJournal{
-    private String sleepJournal;
-    public SleepJournal(){
-        //user can type into console
+    public void sleepJournal() {
         Scanner input = new Scanner(System.in);
         System.out.print("Enter a sleep journal entry: ");
         String s = input.nextLine();
-        this.sleepJournal = s;
-    }
-    public void setJournal(String s) {
-        sleepJournal = s;
-    }
-    public String getJournal() {
-        return sleepJournal;
-    }
 
         //maybe easier to just have String parameter instead of user input?
         //alternative
 //        public SleepJournal(String journal){
 //            this.sleepJournal = journal;
 //        }
+    }
 }
-
 
 class SleepRecommendation{
     //gives recommended time to go to sleep
@@ -434,7 +423,12 @@ class SleepHistory{
     //ArrayList<SleepJournal> sleepNotes = new ArrayList<>();   // sleep journal stuff will be part of log sleep, which will input into sleep history
 
 
+<<<<<<< HEAD
     public SleepHistory(){
+=======
+
+    public SleepHistory(SleepNode day){
+>>>>>>> 841816da724e5e99430b9cf2c96c651aabb89538
         // set null
         // make it add the day (figure out how to keep day of week in SleepNode)
         sleepHistory = new ArrayList<SleepNode>();
@@ -517,4 +511,81 @@ class SleepNode{
     public int getDuration(){
         return duration;
     }
+}
+
+class DayNode{
+    ArrayList <String> eventList;
+
+    public DayNode(){
+        ArrayList <String> eventList = new ArrayList<>();
+    }
+    //ask if they want add event method
+
+}
+
+class Schedule{
+    ArrayList<Event> calendar;
+
+    public Schedule(){
+        ArrayList<Event> calendar = new ArrayList<>();
+    }
+
+    public void addEvent(DayNode a, Event e){
+        int i=0;
+        while(e.compareto(calendar.get(i))==1){
+            i++;
+        }
+        calendar.add(i, e);
+    }
+}
+
+class Event{
+    Time start;
+    Time end;
+    boolean repeating;
+    String title;
+
+    public Event(Time s, Time e, boolean r, String t){
+
+        start = s;
+        end = e;
+        repeating = r;
+        title = t;
+    }
+
+    public int compareto(Event other){
+        if(this.start.meridiem=="AM" && other.start.meridiem == "PM"){
+            return -1;
+        }
+        if(this.start.meridiem=="PM" && other.start.meridiem == "AM"){
+            return 1;
+        }
+        else {
+            if (this.start.hours > other.start.hours) {
+                return 1;
+            }
+            if (this.start.hours < other.start.hours) {
+                return -1;
+            }
+            if (this.start.hours == other.start.hours) {
+                if (this.start.hours > other.start.hours) {
+                    return 1;
+                }
+                if (this.start.minutes < other.start.minutes) {
+                    return -1;
+                }
+            }
+            return 0;
+        }
+
+        //first check if one is am or pm
+        //if other is am and this is pm, return 1
+        //if other is pm and this is am return -1
+        //if they are both one or the other, go into conditionals within the conditional that checks if they are the same
+        //three conditionals within this one, one that checks this.start.hours<other.start.hours, one that checks this.start.hours<other.start.hours
+        //and one that checks this.start.hours==other.start.hours
+        //if they equal eachother then you want to have three more conditionals within that one, checking the same thing as the other three but this time with minutes
+        //for all of these conditions, return -1 for less than, 1 for greater than, and 0 for equals
+
+        }
 }
