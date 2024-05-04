@@ -70,9 +70,7 @@ public class Main extends JPanel implements MouseListener{
         SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal());
         System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
         SleepNode testMonday = new SleepNode(bedTime, wakeTime, "I woke up very refreshed.", 5);
-        SleepJournal testJournal = new SleepJournal();
-        System.out.println(testJournal.getJournal());
-        SleepHistory testHistory = new SleepHistory(testMonday, testJournal);
+        SleepHistory testHistory = new SleepHistory(testMonday);
         //fix
         System.out.println(testHistory.getAverageDuration());
     }
@@ -274,7 +272,7 @@ class Time{
     }
 }
 
-class LogSleep{
+class LogSleep {
     private int wakeTime;
     private int sleepTime;
 
@@ -284,7 +282,7 @@ class LogSleep{
     }
 
     //Getter and setter methods for sleep time and wake time
-    public int getSleepTime(){
+    public int getSleepTime() {
         return sleepTime;
     }
 
@@ -300,33 +298,20 @@ class LogSleep{
         this.wakeTime = wakeTime;
     }
 
-
-    // draw method
-}
-
-class SleepJournal{
-    private String sleepJournal;
-    public SleepJournal(){
-        //user can type into console
+    public void sleepJournal() {
         Scanner input = new Scanner(System.in);
         System.out.print("Enter a sleep journal entry: ");
         String s = input.nextLine();
-        this.sleepJournal = s;
-    }
-    public void setJournal(String s) {
-        sleepJournal = s;
-    }
-    public String getJournal() {
-        return sleepJournal;
-    }
 
         //maybe easier to just have String parameter instead of user input?
         //alternative
 //        public SleepJournal(String journal){
 //            this.sleepJournal = journal;
 //        }
+    }
 }
 
+    // draw method
 
 class SleepRecommendation{
     //gives recommended time to go to sleep
@@ -429,7 +414,7 @@ class SleepHistory{
 
 
 
-    public SleepHistory(SleepNode day, SleepJournal note){
+    public SleepHistory(SleepNode day){
         // set null
         // make it add the day (figure out how to keep day of week in SleepNode)
         sleepHistory.add(day);
@@ -510,3 +495,9 @@ class SleepNode{
         return duration;
     }
 }
+
+class DayNode{}
+
+class Schedule{}
+
+class Event{}
