@@ -1,41 +1,62 @@
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Font;
-import java.awt.FontFormatException;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.awt.GraphicsEnvironment; //testing font
-import java.awt.Dimension;
+
 import javax.swing.*;
+
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Date;
 import java.util.Scanner;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
 
 public class Main extends JPanel implements MouseListener{
     public static final int WIDTH = 500;
     public static final int HEIGHT = 750;
+
     User user;
-    //field for each page (kinda like having multiple "Worlds" from the other homeworks)
+
+    static JFrame frame = new JFrame("CozyMammoth");
+
+    //App Pages
+    JPanel Welcome = new JPanel();
+    JPanel NewUser = new JPanel();
+    JPanel Home = new JPanel();
+    JPanel SleepHistory = new JPanel();
+    JPanel LogSleep1 = new JPanel();
+    JPanel LogSleep2 = new JPanel();
+    JPanel SleepRecs = new JPanel();
+    JPanel Schedule = new JPanel();
+    JPanel Settings = new JPanel();
+    //CardLayout to manage JPanel "pages"
+    CardLayout cl = new CardLayout();
 
     //constructor
     public Main(){
         addMouseListener(this);
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        //initialize the pages
+
+        //initialize JPanels
+        initWelcome();
     }
 
     public static void main(String[] args){
         //jframe stuff
-        JFrame frame = new JFrame("CozyMammoth");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
         Main mainInstance = new Main();
-        frame.setContentPane(mainInstance);
+        
+        mainInstance.setLayout(mainInstance.cl);
+        mainInstance.add(mainInstance.Welcome, "1");
+        //continue adding panels
+
+        frame.setContentPane(mainInstance); //showing Welcome because it's the first panel added(?)
         frame.pack();
         frame.setVisible(true);
 
@@ -47,8 +68,8 @@ public class Main extends JPanel implements MouseListener{
         System.out.println("bedtime goal: " + testUser.getBedTime());
         System.out.println("wake up goal: " + testUser.getWakeTime());
         // SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal());
-        System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
-        // SleepNode testMonday = new SleepNode(bedTime, wakeTime);
+        //System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
+        SleepNode testMonday = new SleepNode(bedTime, wakeTime, "I woke up very refreshed.", 5);
         SleepJournal testJournal = new SleepJournal();
         System.out.println(testJournal.getJournal());
         // SleepHistory testHistory = new SleepHistory(testMonday, testJournal);
@@ -56,80 +77,103 @@ public class Main extends JPanel implements MouseListener{
         // System.out.println(testHistory.getAverageDuration());
     }
 
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    // //do you need this? if we have initWelcome
+    // public void paintComponent(Graphics g) {
+    //     super.paintComponent(g);
 
-        //draw the welcome screen
+    //     //draw the welcome screen
+    //     Color bg = new Color(60, 86, 166);
+    //     g.setColor(bg);
+    //     g.fillRect(0, 0, WIDTH, HEIGHT);
+
+    //     try {
+    //         BufferedImage logo = ImageIO.read(new File("logo.png"));
+    //         g.drawImage(logo,100,150,300,300,null);
+    //         // Font title = Font.createFont(Font.TRUETYPE_FONT, new File("Rubik.ttf"));
+    //         // g.setColor(Color.WHITE);
+    //         // g.setFont(title);
+    //         // g.drawString("Cozy Mammoth",0,400);
+    //         // // FIGURE OUT FONT LATER
+    //     }
+    //     // catch (FontFormatException e) {
+    //     //     e.printStackTrace();
+    //     // }
+    //     catch (IOException e) { 
+    //         e.printStackTrace();
+    //     }
+
+    //     //add a buffer of sorts?
+    //     //MousePressed as a buffer? or make it execute a loading animation of sorts
+    // }
+
+    private void initWelcome() {
         Color bg = new Color(60, 86, 166);
-        g.setColor(bg);
-        g.fillRect(0, 0, WIDTH, HEIGHT);
-        try {
-            BufferedImage logo = ImageIO.read(new File("logo.png"));
-            g.drawImage(logo,100,150,300,300,null);
-            Font title = Font.createFont(Font.TRUETYPE_FONT, new File("Rubik.ttf"));
-            g.setColor(Color.WHITE);
-            g.setFont(title);
-            g.drawString("Cozy Mammoth",0,400);
-            //FIGURE OUT FONT LATER
-        }
-        catch (FontFormatException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) { 
-            e.printStackTrace();
-        }
+        this.Welcome.setBackground(bg);
 
-        //add a buffer of sorts?
-        //MousePressed as a buffer? or make it execute a loading animation of sorts
+        JLabel title = new JLabel("Cozy Mammoth");
+        this.Welcome.add(title);
+
+        title.setForeground(Color.WHITE);
+        title.setFont(new Font("Sans-serif", Font.BOLD, 40));
+        title.setHorizontalTextPosition(JLabel.CENTER);
+        title.setVerticalTextPosition(JLabel.BOTTOM);
+
+        //resizing logo
+        ImageIcon logo = new ImageIcon("logo.png");
+        Image image = logo.getImage(); //transform it 
+        Image newimg = image.getScaledInstance(300, 300, java.awt.Image.SCALE_SMOOTH); //scale down
+        logo = new ImageIcon(newimg); //transform back
+        title.setIcon(logo);
+
+        title.setIconTextGap(20);
     }
 
-    public void drawNewUser() {
+    //New User welcome page (WIP)
+    public void initNewUser() {
+        System.out.println("initUser called...");
         Graphics g = this.getGraphics();
         Color bg = new Color(37,44,64);
         g.setColor(bg);
         g.fillRect(0, 0, WIDTH, HEIGHT);
 
         //figure out jframe jcomponent stuff
-
-        // g.setColor(Color.WHITE);
-        // JLabel label1, label2, label3, label4, label5;
-        // JButton button;
-        // JTextField text1, text2, text3, text4, text5;
-        // button = new JButton("Done");
-        // label1 = new JLabel("Name");
+        JLabel label1; //label2, label3, label4, label5;
+        JButton button;
+        JTextField text1; //text2, text3, text4, text5;
+        button = new JButton("Done");
+        label1 = new JLabel("Name");
         // label2 = new JLabel("Age");
         // label3 = new JLabel("Sleep Goal");
         // label4 = new JLabel("Bedtime");
         // label5 = new JLabel("Wake Up");
-        // text1 = new JTextField(20);
+        text1 = new JTextField(20);
         // text2 = new JTextField(20);
         // text3 = new JTextField(20);
         // text4 = new JTextField(20);
         // text5 = new JTextField(20);
-        // label1.setBounds(50,50,100,30);
-        // this.add(label1);
-        // this.setVisible(true);
+        label1.setBounds(0,0,100,30);
+        this.add(label1);
+        System.out.println(label1.isVisible());
     }
 
-    //don't need a run method, but need methods to listen to the buttons that are pressed/mouse clicks
+    //MOUSELISTENER THINGS
     public void mousePressed(MouseEvent e) {
-        System.out.println("Mouse pressed");
-        //if no User has been initialized, draw the NewUser page
-        if(user == null) {
-            drawNewUser();
-        }
-        //otherwise, continue to home page
+        System.out.println("Mouse pressed detected on " + e.getComponent().getClass().getName() + ".");
+        //how to access the cardlayout from here if you need the mainInstance's cardlayout???
+        
+        // //if no User has been initialized, pull up the NewUser panel
+        // if(user == null) {
+        
+        // }
+        // //otherwise, pull up the Home Panel
+        // else {
+            
+        // }
     }
-
     public void mouseReleased(MouseEvent e) {}
-
     public void mouseEntered(MouseEvent e) {}
-
     public void mouseExited(MouseEvent e) {}
-
-    public void mouseClicked(MouseEvent e) {
-        System.out.println("Mouse clicked (# of clicks: " + e.getClickCount() + ") detected on " + e.getComponent().getClass().getName() + ".");
-    }
+    public void mouseClicked(MouseEvent e) {}
 }
 
 class User{
@@ -315,7 +359,7 @@ class SleepRecommendation{
             sleepRecHours = 24 + sleepRecHours;
         }
         Time sleeprec = new Time(sleepRecHours, sleepRecMins);
-        return sleeprec.toString();
+        return "According to your set goals, you should sleep at: " + sleeprec.toString();  // change name to goalsleeprec
     }
 
     // public String calculateAgeSleepRec(){   //in progress, updated ver of above
@@ -446,11 +490,12 @@ class SleepNode{
     // add sleep journal -- notes, and quslity of sleep
     //get the day of the week based on the date
 
-    public SleepNode(Time bedtime, Time wake, String sleepJournal, int sleepRating){
-        bedTime = bedtime;
+    public SleepNode(Time bed, Time wake, String note, int sleepRating){
+        bedTime = bed;
         wakeTime = wake;
-        sleepNote = sleepJournal;
+        sleepNote = note;
         sleepQuality = sleepRating;
+        this.calculateDuration(bed, wake);
     }
     // getters
 
