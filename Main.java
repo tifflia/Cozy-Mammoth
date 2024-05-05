@@ -333,10 +333,10 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
     private Time bedTime;
     private double age;
     private int sleepGoal;
-    private ArrayList sleepHistory;
-    private ArrayList calendar;
+    private SleepHistory sleepHistory;
+    private Schedule calendar;
 
-    public SleepRecommendation(Time wakeTime, Time bedTime, double age, int sleepGoal, ArrayList sleepHistory, ArrayList calendar){
+    public SleepRecommendation(Time wakeTime, Time bedTime, double age, int sleepGoal, SleepHistory sleepHistory, Schedule calendar){
         this.wakeTime = wakeTime;
         this.bedTime = bedTime;
         this.age = age;
@@ -369,6 +369,7 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
             bestsleepRecHours = 24 + bestsleepRecHours;
         }
         Time bestsleeprec = new Time(bestsleepRecHours, bestsleepRecMins);
+
         //calculates less sleep times
         int othersleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
         int othersleepRecHours = (wakeTime.getHour() - 4);
@@ -381,8 +382,8 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
         }
         Time othersleeprec = new Time(othersleepRecHours, othersleepRecMins);
         return "According to your set goals, you should sleep at: " + sleeprec.toString()
-        +"\n For sleeping 5-6 cycles, you should sleep at: " + bestsleeprec.toString()
-        + "\n For less cycles, sleep at: " + othersleeprec.toString();  // change name to goalsleeprec
+        +"\n For sleeping 5-6 cycles, you should sleep at: " + "this aint working" + bestsleeprec.toString()
+        + "\n For less cycles, sleep at: " + "will work on this" + othersleeprec.toString();  // change name to goalsleeprec
 
     }
     //     Time sleeprec = new Time(sleepRecHours, sleepRecMins);
@@ -445,10 +446,6 @@ class SleepHistory extends JPanel /*implements MouseListener*/{
     //ArrayList<SleepJournal> sleepNotes = new ArrayList<>();   // sleep journal stuff will be part of log sleep, which will input into sleep history
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 031029bc446339c925c50b28187d07385b10396f
     public SleepHistory(SleepNode day){
         // set null
         // make it add the day (figure out how to keep day of week in SleepNode)
