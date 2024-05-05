@@ -44,6 +44,7 @@ public class Main extends JPanel implements MouseListener{
 
         //initialize JPanels
         initWelcome();
+        initNewUser();
     }
 
     public static void main(String[] args){
@@ -54,6 +55,7 @@ public class Main extends JPanel implements MouseListener{
         
         mainInstance.setLayout(mainInstance.cl);
         mainInstance.add(mainInstance.Welcome, "1");
+        mainInstance.add(mainInstance.NewUser, "2");
         //continue adding panels
 
         frame.setContentPane(mainInstance); //showing Welcome because it's the first panel added(?)
@@ -104,17 +106,19 @@ public class Main extends JPanel implements MouseListener{
     //     //MousePressed as a buffer? or make it execute a loading animation of sorts
     // }
 
+    //Main Welcome page
     private void initWelcome() {
         Color bg = new Color(60, 86, 166);
         this.Welcome.setBackground(bg);
+        this.Welcome.setLayout(new GridLayout(2,1));
 
         JLabel title = new JLabel("Cozy Mammoth");
         this.Welcome.add(title);
-
         title.setForeground(Color.WHITE);
         title.setFont(new Font("Sans-serif", Font.BOLD, 40));
         title.setHorizontalTextPosition(JLabel.CENTER);
         title.setVerticalTextPosition(JLabel.BOTTOM);
+        title.setHorizontalAlignment(JLabel.CENTER);
 
         //resizing logo
         ImageIcon logo = new ImageIcon("logo.png");
@@ -124,15 +128,24 @@ public class Main extends JPanel implements MouseListener{
         title.setIcon(logo);
 
         title.setIconTextGap(20);
+
+        JLabel subtitle = new JLabel("Click to continue");
+        this.Welcome.add(subtitle);
+        subtitle.setForeground(Color.WHITE);
+        subtitle.setFont(new Font("Sans-serif", Font.PLAIN, 20));
+        subtitle.setHorizontalTextPosition(JLabel.CENTER);
+        subtitle.setVerticalTextPosition(JLabel.BOTTOM);
+        subtitle.setHorizontalAlignment(JLabel.CENTER);
     }
 
-    //New User welcome page (WIP)
-    public void initNewUser() {
-        System.out.println("initUser called...");
-        Graphics g = this.getGraphics();
+    //New User Welcome page
+    private void initNewUser() {
         Color bg = new Color(37,44,64);
-        g.setColor(bg);
-        g.fillRect(0, 0, WIDTH, HEIGHT);
+        this.NewUser.setBackground(bg);
+
+        JLabel test = new JLabel("This is the NewUser panel");
+        this.NewUser.add(test);
+        test.setForeground(Color.WHITE);
 
         //figure out jframe jcomponent stuff
         JLabel label1; //label2, label3, label4, label5;
@@ -149,9 +162,7 @@ public class Main extends JPanel implements MouseListener{
         // text3 = new JTextField(20);
         // text4 = new JTextField(20);
         // text5 = new JTextField(20);
-        label1.setBounds(0,0,100,30);
-        this.add(label1);
-        System.out.println(label1.isVisible());
+        label1.setBounds(0,0,100,30); //wait what is this supposed to do again? (jlabel vid)
     }
 
     //MOUSELISTENER THINGS
@@ -159,6 +170,8 @@ public class Main extends JPanel implements MouseListener{
         System.out.println("Mouse pressed detected on " + e.getComponent().getClass().getName() + ".");
         //how to access the cardlayout from here if you need the mainInstance's cardlayout???
         
+        this.cl.show(this, "2");
+
         // //if no User has been initialized, pull up the NewUser panel
         // if(user == null) {
         
@@ -272,7 +285,7 @@ class Time{
     }
 }
 
-class LogSleep {
+class LogSleep extends JPanel /*implements MouseListener*/{
     private int wakeTime;
     private int sleepTime;
 
@@ -311,7 +324,7 @@ class LogSleep {
     }
 }
 
-class SleepRecommendation{
+class SleepRecommendation extends JPanel /*implements MouseListener*/{
     //gives recommended time to go to sleep
     private Time wakeTime;
     private Time bedTime;
@@ -403,13 +416,12 @@ class SleepRecommendation{
     }
 }
 
-class SleepHistory{
+class SleepHistory extends JPanel /*implements MouseListener*/{
     //contains history of sleep from past week
     private int averageSleepDuration;
     ArrayList<SleepNode> sleepHistory = new ArrayList<SleepNode>();
 
     //ArrayList<SleepJournal> sleepNotes = new ArrayList<>();
-
 
 
     public SleepHistory(SleepNode day){
@@ -494,17 +506,7 @@ class SleepNode{
     }
 }
 
-class DayNode{
-    ArrayList <String> eventList;
-
-    public DayNode(){
-        ArrayList <String> eventList = new ArrayList<>();
-    }
-    //ask if they want add event method
-
-}
-
-class Schedule{
+class Schedule extends JPanel /*implements MouseListener*/{
     ArrayList<Event> calendar;
 
     public Schedule(){
@@ -518,6 +520,16 @@ class Schedule{
         }
         calendar.add(i, e);
     }
+}
+
+class DayNode{
+    ArrayList <String> eventList;
+
+    public DayNode(){
+        ArrayList <String> eventList = new ArrayList<>();
+    }
+    //ask if they want add event method
+
 }
 
 class Event{
