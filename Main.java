@@ -143,7 +143,7 @@ public class Main extends JPanel implements MouseListener{
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
     }
 
-    //New User Welcome page
+    //New User page
     private void initNewUser() {
         Color bg = new Color(37,44,64);
         this.NewUser.setBackground(bg);
@@ -169,47 +169,152 @@ public class Main extends JPanel implements MouseListener{
         subtitle.setForeground(Color.WHITE);
         subtitle.setFont(new Font("Arial", Font.PLAIN, 15));
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+        subtitle.setBorder(BorderFactory.createEmptyBorder(0,0,25,0));
 
         //initializing components
-        // JLabel label1, label2, label3, label4, label5;
-        // JTextField text1, text2, text3, text4, text5;
         JLabel[] labels = new JLabel[5];
-        JTextField[] texts = new JTextField[5];
+        JTextField[] texts = new JTextField[7];
+        Box text4 = Box.createHorizontalBox();
+        Box text4wrap = Box.createVerticalBox();
+        Box text5 = Box.createHorizontalBox();
+        Box text5wrap = Box.createVerticalBox();
         JButton button = new JButton("Done");
+
         labels[0] = new JLabel("Name");
         labels[1] = new JLabel("Age");
         labels[2] = new JLabel("Sleep Goal");
         labels[3] = new JLabel("Bedtime");
         labels[4] = new JLabel("Wake Up");
-        // text1 = new JTextField(20); //name
-        // text2 = new JTextField(20); //age --- spinner?
-        // text3 = new JTextField(20); //sleep goal --- spinner?
-        // text4 = new JTextField(20); //bedtime --- multiple spinners?
-        // text5 = new JTextField(20); //waketime () --- multiple spinners?
-        for(int i = 0; i < 5; i++) {
-            texts[i] = new JTextField(20);
 
-            //styling
-            Color textbg = new Color(104, 121, 170);
+        Color textbg = new Color(104, 121, 170);
+        for(int i = 0; i < texts.length; i++) {
+            if(i < 3) {
+                texts[i] = new JTextField(20);
+            }
+            else{
+                texts[i] = new JTextField(1);
+            }
+
+            //textfield styling
             texts[i].setBackground(textbg);
             texts[i].setForeground(Color.WHITE);
             texts[i].setFont(new Font("Arial", Font.PLAIN, 15));
-            texts[i].setMargin(new Insets(10, 20, 10, 20));
+            texts[i].setCaretColor(Color.WHITE);
         }
 
-        //adding to box -- maybe add these to a separate box and then give that box an emptyborder(?), ur just use border and math to do it
-        for(int i = 0; i < 5; i++) {
-            //adding to box
-            box.add(labels[i]);
-            box.add(texts[i]);
+        //adding to box that wraps the first 3 labels + textfields to the mainbox
+        for(int i = 0; i < 3; i++) {
+            Box wrap = Box.createVerticalBox();
+            wrap.add(labels[i]);
+            wrap.add(texts[i]);
+            box.add(wrap);
 
-            //label styling
+            //textfield styling
+            texts[i].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+            texts[i].setAlignmentX(Component.LEFT_ALIGNMENT);
+            wrap.setAlignmentX(Component.CENTER_ALIGNMENT);
+        }
+
+        //label styling
+        for(int i = 0; i < labels.length; i++) {
             labels[i].setFont(new Font("Arial", Font.PLAIN, 15));
             labels[i].setForeground(Color.WHITE);
             labels[i].setBorder(BorderFactory.createEmptyBorder(25,0,5,0));
             labels[i].setAlignmentX(Component.LEFT_ALIGNMENT);
         }
-        box.add(button);
+
+        String[] meridiems = {"AM", "PM"};
+        JComboBox<String> bedtimeCB = new JComboBox<>(meridiems);
+        JComboBox<String> wakeupCB = new JComboBox<>(meridiems);
+
+        bedtimeCB.setBorder(BorderFactory.createEmptyBorder(0,10,0,0));
+        wakeupCB.setBorder(BorderFactory.createEmptyBorder(0,10,0,0));
+
+        JLabel divider1 = new JLabel(":");
+        JLabel divider2 = new JLabel(":");
+        divider1.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
+        divider1.setFont(new Font("Arial", Font.PLAIN, 15));
+        divider1.setForeground(Color.WHITE);
+        divider2.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
+        divider2.setFont(new Font("Arial", Font.PLAIN, 15));
+        divider2.setForeground(Color.WHITE);
+        
+        // bedtime (text + label + text + combobox)
+        text4.add(texts[3]);
+        text4.add(divider1);
+        text4.add(texts[4]);
+        text4.add(bedtimeCB);
+        //bedtime styling
+        texts[3].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        texts[4].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        text4.setAlignmentY(Component.CENTER_ALIGNMENT);
+        //text4 (horizontal) --> text4wrap (vertical)
+        text4wrap.add(text4);
+        text4wrap.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // wakeup (text + label + text + combobox)
+        text5.add(texts[5]);
+        text5.add(divider2);
+        text5.add(texts[6]);
+        text5.add(wakeupCB);
+        //wakeup styling
+        texts[5].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        texts[6].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        text5.setAlignmentY(Component.CENTER_ALIGNMENT);
+        //text5 (horizontal) --> text5wrap (vertical)
+        text5wrap.add(text5);
+        text5wrap.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        //bedtime box (label + bedtime box)
+        Box wrap4 = Box.createVerticalBox();
+        wrap4.add(labels[3]);
+        wrap4.add(text4wrap);
+        box.add(wrap4);
+        wrap4.setAlignmentX(Component.CENTER_ALIGNMENT);
+        //wakeup box (label + wakeup box)
+        Box wrap5 = Box.createVerticalBox();
+        wrap5.add(labels[4]);
+        wrap5.add(text5wrap);
+        box.add(wrap5);
+        wrap5.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        //BUTTON
+        //adding box that wraps the done button to the main box
+        Box buttonWrap = Box.createVerticalBox();
+        buttonWrap.add(button);
+        box.add(buttonWrap);
+
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonWrap.setBorder(BorderFactory.createEmptyBorder(50,0,0,0));
+
+        button.setMargin(new Insets(5,25,5,25));
+        Color buttColor = new Color(80, 121, 242);
+        button.setBackground(buttColor);
+        button.setOpaque(true);
+        button.setBorderPainted(false);
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.PLAIN, 15));
+
+        button.addMouseListener(new MouseListener() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+                Color clickedButtColor = new Color(51, 77, 156);
+                button.setBackground(clickedButtColor);
+				System.out.println("button has been pressed");
+			}
+            public void mouseReleased(MouseEvent e) {
+                button.setBackground(buttColor);
+            }
+            public void mouseEntered(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {}
+            public void mouseClicked(MouseEvent e) {
+                //check if the values for age, sleep goal, bedtime, and wake up are valid
+                // if(Time.checkTime()){}
+
+                //textfield.getText(); = string
+                //combobox.getSelectedItem(); = string
+            }
+		});
     }
 
     //MOUSELISTENER THINGS
@@ -281,13 +386,13 @@ class User{
 
 class Time{
     //calculated in military time
-     int hours; //0-24 (excluded)
-     int minutes;//0-60 (excluded)
-     String meridiem; //AM or PM
+    int hours; //0-24 (excluded)
+    int minutes;//0-60 (excluded)
+    String meridiem; //AM or PM
 
     //constructor
     public Time(int h, int m) {
-        //don't use checktime here, use it when the click input is registered
+        //don't use checktime here, use it when whatever action is registered
         hours = h;
         minutes = m;
         if(hours <= 12) meridiem = "AM";
