@@ -53,12 +53,13 @@ public class Main extends JPanel implements MouseListener{
         frame.setResizable(false);
         Main mainInstance = new Main();
         
+        //add panels to the cardlayout
         mainInstance.setLayout(mainInstance.cl);
         mainInstance.add(mainInstance.Welcome, "1");
         mainInstance.add(mainInstance.NewUser, "2");
         //continue adding panels
 
-        frame.setContentPane(mainInstance); //showing Welcome because it's the first panel added(?)
+        frame.setContentPane(mainInstance); //showing Welcome because it's the first panel added
         frame.pack();
         frame.setVisible(true);
 
@@ -101,85 +102,125 @@ public class Main extends JPanel implements MouseListener{
     //     catch (IOException e) { 
     //         e.printStackTrace();
     //     }
-
-    //     //add a buffer of sorts?
-    //     //MousePressed as a buffer? or make it execute a loading animation of sorts
     // }
 
     //Main Welcome page
     private void initWelcome() {
         Color bg = new Color(60, 86, 166);
         this.Welcome.setBackground(bg);
-        this.Welcome.setLayout(new GridLayout(2,1));
+
+        Box box = Box.createVerticalBox();
+        this.Welcome.add(box);
 
         JLabel title = new JLabel("Cozy Mammoth");
-        this.Welcome.add(title);
+        box.add(title);
+
+        //title styling
         title.setForeground(Color.WHITE);
-        title.setFont(new Font("Sans-serif", Font.BOLD, 40));
+        title.setFont(new Font("Arial", Font.BOLD, 50));
         title.setHorizontalTextPosition(JLabel.CENTER);
         title.setVerticalTextPosition(JLabel.BOTTOM);
-        title.setHorizontalAlignment(JLabel.CENTER);
+        title.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+        title.setBorder(BorderFactory.createEmptyBorder(150,0,100,0));
 
         //resizing logo
         ImageIcon logo = new ImageIcon("logo.png");
         Image image = logo.getImage(); //transform it 
-        Image newimg = image.getScaledInstance(300, 300, java.awt.Image.SCALE_SMOOTH); //scale down
+        Image newimg = image.getScaledInstance(250, 250, java.awt.Image.SCALE_SMOOTH); //scale down
         logo = new ImageIcon(newimg); //transform back
         title.setIcon(logo);
-
         title.setIconTextGap(20);
 
         JLabel subtitle = new JLabel("Click to continue");
-        this.Welcome.add(subtitle);
+        box.add(subtitle);
+
+        //subtitle styling
         subtitle.setForeground(Color.WHITE);
-        subtitle.setFont(new Font("Sans-serif", Font.PLAIN, 20));
-        subtitle.setHorizontalTextPosition(JLabel.CENTER);
-        subtitle.setVerticalTextPosition(JLabel.BOTTOM);
-        subtitle.setHorizontalAlignment(JLabel.CENTER);
+        subtitle.setFont(new Font("Arial", Font.PLAIN, 20));
+        subtitle.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
     }
 
     //New User Welcome page
     private void initNewUser() {
         Color bg = new Color(37,44,64);
         this.NewUser.setBackground(bg);
+        this.NewUser.setBorder(BorderFactory.createEmptyBorder(50,50,50,50));
 
-        JLabel test = new JLabel("This is the NewUser panel");
-        this.NewUser.add(test);
-        test.setForeground(Color.WHITE);
+        //main box
+        Box box = Box.createVerticalBox();
+        this.NewUser.add(box);
 
-        //figure out jframe jcomponent stuff
-        JLabel label1; //label2, label3, label4, label5;
-        JButton button;
-        JTextField text1; //text2, text3, text4, text5;
-        button = new JButton("Done");
-        label1 = new JLabel("Name");
-        // label2 = new JLabel("Age");
-        // label3 = new JLabel("Sleep Goal");
-        // label4 = new JLabel("Bedtime");
-        // label5 = new JLabel("Wake Up");
-        text1 = new JTextField(20);
-        // text2 = new JTextField(20);
-        // text3 = new JTextField(20);
-        // text4 = new JTextField(20);
-        // text5 = new JTextField(20);
-        label1.setBounds(0,0,100,30); //wait what is this supposed to do again? (jlabel vid)
+        JLabel title = new JLabel("Welcome!");
+        box.add(title);
+
+        //title styling
+        title.setForeground(Color.WHITE);
+        title.setFont(new Font("Arial", Font.PLAIN, 25));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+        title.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+        
+        JLabel subtitle = new JLabel("Tell us about yourself to get started");
+        box.add(subtitle);
+
+        //subtitle styling
+        subtitle.setForeground(Color.WHITE);
+        subtitle.setFont(new Font("Arial", Font.PLAIN, 15));
+        subtitle.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+
+        //initializing components
+        // JLabel label1, label2, label3, label4, label5;
+        // JTextField text1, text2, text3, text4, text5;
+        JLabel[] labels = new JLabel[5];
+        JTextField[] texts = new JTextField[5];
+        JButton button = new JButton("Done");
+        labels[0] = new JLabel("Name");
+        labels[1] = new JLabel("Age");
+        labels[2] = new JLabel("Sleep Goal");
+        labels[3] = new JLabel("Bedtime");
+        labels[4] = new JLabel("Wake Up");
+        // text1 = new JTextField(20); //name
+        // text2 = new JTextField(20); //age --- spinner?
+        // text3 = new JTextField(20); //sleep goal --- spinner?
+        // text4 = new JTextField(20); //bedtime --- multiple spinners?
+        // text5 = new JTextField(20); //waketime () --- multiple spinners?
+        for(int i = 0; i < 5; i++) {
+            texts[i] = new JTextField(20);
+
+            //styling
+            Color textbg = new Color(104, 121, 170);
+            texts[i].setBackground(textbg);
+            texts[i].setForeground(Color.WHITE);
+            texts[i].setFont(new Font("Arial", Font.PLAIN, 15));
+            texts[i].setMargin(new Insets(10, 20, 10, 20));
+        }
+
+        //adding to box -- maybe add these to a separate box and then give that box an emptyborder(?), ur just use border and math to do it
+        for(int i = 0; i < 5; i++) {
+            //adding to box
+            box.add(labels[i]);
+            box.add(texts[i]);
+
+            //label styling
+            labels[i].setFont(new Font("Arial", Font.PLAIN, 15));
+            labels[i].setForeground(Color.WHITE);
+            labels[i].setBorder(BorderFactory.createEmptyBorder(25,0,5,0));
+            labels[i].setAlignmentX(Component.LEFT_ALIGNMENT);
+        }
+        box.add(button);
     }
 
     //MOUSELISTENER THINGS
     public void mousePressed(MouseEvent e) {
         System.out.println("Mouse pressed detected on " + e.getComponent().getClass().getName() + ".");
-        //how to access the cardlayout from here if you need the mainInstance's cardlayout???
-        
-        this.cl.show(this, "2");
 
-        // //if no User has been initialized, pull up the NewUser panel
-        // if(user == null) {
-        
-        // }
-        // //otherwise, pull up the Home Panel
-        // else {
+        //if no User has been initialized, pull up the NewUser panel
+        if(this.user == null) {
+            this.cl.show(this, "2");
+        }
+        //otherwise, pull up the Home Panel
+        else {
             
-        // }
+        }
     }
     public void mouseReleased(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}
@@ -483,7 +524,7 @@ class SleepNode{
     private int dayOfWeek;
     private String sleepNote;
     private int sleepQuality;
-    // add sleep journal -- notes, and quslity of sleep
+    // add sleep journal -- notes, and quality of sleep
     //get the day of the week based on the date
 
     public SleepNode(Time bed, Time wake, String note, int sleepRating){
