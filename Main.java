@@ -69,12 +69,18 @@ public class Main extends JPanel implements MouseListener{
         User testUser = new User("John Doe", 20, 8, bedTime, wakeTime);
         System.out.println("bedtime goal: " + testUser.getBedTime());
         System.out.println("wake up goal: " + testUser.getWakeTime());
-        SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal());
-        System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
+        // SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal());
+        //System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
         SleepNode testMonday = new SleepNode(bedTime, wakeTime, "I woke up very refreshed.", 5);
+<<<<<<< HEAD
+        SleepJournal testJournal = new SleepJournal();
+        System.out.println(testJournal.getJournal());
+        // SleepHistory testHistory = new SleepHistory(testMonday, testJournal);
+=======
         SleepHistory testHistory = new SleepHistory(testMonday);
+>>>>>>> 841816da724e5e99430b9cf2c96c651aabb89538
         //fix
-        System.out.println(testHistory.getAverageDuration());
+        // System.out.println(testHistory.getAverageDuration());
     }
 
     // //do you need this? if we have initWelcome
@@ -330,12 +336,18 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
     private Time bedTime;
     private double age;
     private int sleepGoal;
+    private ArrayList sleepHistory;
+    private ArrayList calendar;
 
-    public SleepRecommendation(Time wakeTime, Time bedTime, double age, int sleepGoal){
+    public SleepRecommendation(Time wakeTime, Time bedTime, double age, int sleepGoal, ArrayList sleepHistory, ArrayList calendar){
         this.wakeTime = wakeTime;
         this.bedTime = bedTime;
         this.age = age;
         this.sleepGoal = sleepGoal;
+        // the above is user stuff, but rn not calling it anywhere so placeholder
+        this.sleepHistory = sleepHistory;
+        this.calendar = calendar;
+
     }
     //will implement more complex algorithms later (considering rem cycle, etc)
     public String calculateSleepRec(){
@@ -349,7 +361,7 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
             sleepRecHours = 24 + sleepRecHours;
         }
         Time sleeprec = new Time(sleepRecHours, sleepRecMins);
-        return sleeprec.toString();
+        return "According to your set goals, you should sleep at: " + sleeprec.toString();  // change name to goalsleeprec
     }
 
     // public String calculateAgeSleepRec(){   //in progress, updated ver of above
@@ -419,15 +431,16 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
 class SleepHistory extends JPanel /*implements MouseListener*/{
     //contains history of sleep from past week
     private int averageSleepDuration;
-    ArrayList<SleepNode> sleepHistory = new ArrayList<SleepNode>();
+    ArrayList<SleepNode> sleepHistory;
 
-    //ArrayList<SleepJournal> sleepNotes = new ArrayList<>();
+    //ArrayList<SleepJournal> sleepNotes = new ArrayList<>();   // sleep journal stuff will be part of log sleep, which will input into sleep history
 
 
     public SleepHistory(SleepNode day){
+>>>>>>> 841816da724e5e99430b9cf2c96c651aabb89538
         // set null
         // make it add the day (figure out how to keep day of week in SleepNode)
-        sleepHistory.add(day);
+        sleepHistory = new ArrayList<SleepNode>();
         //sleepNotes.add(note);
     }
 
@@ -474,6 +487,7 @@ class SleepNode{
     private Time bedTime;
     private Time wakeTime;
     private int duration;
+    private int dayOfWeek;
     private String sleepNote;
     private int sleepQuality;
     // add sleep journal -- notes, and quslity of sleep
@@ -495,6 +509,8 @@ class SleepNode{
     public Time getWakeTime(){
         return wakeTime;
     }
+    
+    //getters for dayofweek. sleepnote, sleepquality
 
     public void calculateDuration(Time sleepTime, Time wakeTime){
         // turn sleeptime and wake time to int, calculate duration
