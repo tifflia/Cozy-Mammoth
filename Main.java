@@ -12,6 +12,7 @@ import java.io.IOException;
 import javax.swing.*;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Random;
 import java.util.Date;
 import java.util.Scanner;
@@ -70,10 +71,12 @@ public class Main extends JPanel implements MouseListener{
         User testUser = new User("John Doe", 20, 8, bedTime, wakeTime);
         System.out.println("bedtime goal: " + testUser.getBedTime());
         System.out.println("wake up goal: " + testUser.getWakeTime());
-        // SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal());
-        //System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
         SleepNode testMonday = new SleepNode(bedTime, wakeTime, "I woke up very refreshed.", 5);
         SleepHistory testHistory = new SleepHistory(testMonday);
+        SleepHistory testhistory = new SleepHistory(testMonday);
+        Schedule testcalendar = new Schedule();
+        SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal(), testhistory, testcalendar);
+        System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
         //fix
         // System.out.println(testHistory.getAverageDuration());
     }
@@ -371,10 +374,10 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
     private Time bedTime;
     private double age;
     private int sleepGoal;
-    private ArrayList sleepHistory;
-    private ArrayList calendar;
+    private SleepHistory sleepHistory;
+    private Schedule calendar;
 
-    public SleepRecommendation(Time wakeTime, Time bedTime, double age, int sleepGoal, ArrayList sleepHistory, ArrayList calendar){
+    public SleepRecommendation(Time wakeTime, Time bedTime, double age, int sleepGoal, SleepHistory sleepHistory, Schedule calendar){
         this.wakeTime = wakeTime;
         this.bedTime = bedTime;
         this.age = age;
@@ -396,19 +399,34 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
             sleepRecHours = 24 + sleepRecHours;
         }
         Time sleeprec = new Time(sleepRecHours, sleepRecMins);
-        return "According to your set goals, you should sleep at: " + sleeprec.toString();  // change name to goalsleeprec
-    }
+        //calculates best sleep times
+        int bestsleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
+        int bestsleepRecHours = (wakeTime.getHour() - 9);
+        if (bestsleepRecMins < 0){
+            bestsleepRecMins = 60 - Math.abs(bestsleepRecMins);
+            bestsleepRecHours =- 1;
+        }
+        if (bestsleepRecHours < 0){
+            bestsleepRecHours = 24 + bestsleepRecHours;
+        }
+        Time bestsleeprec = new Time(bestsleepRecHours, bestsleepRecMins);
 
-    // public String calculateAgeSleepRec(){   //in progress, updated ver of above
-    //     int sleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
-    //     int sleepRecHours = (wakeTime.getHour() - sleepGoal);
-    //     if (sleepRecMins < 0){
-    //         sleepRecMins = 60 - Math.abs(sleepRecMins);
-    //         sleepRecHours =- 1;
-    //     }
-    //     if (sleepRecHours < 0){
-    //         sleepRecHours = 12 + sleepRecHours;
-    //     }
+        //calculates less sleep times
+        int othersleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
+        int othersleepRecHours = (wakeTime.getHour() - 4);
+        if (othersleepRecMins < 0){
+            othersleepRecMins = 60 - Math.abs(othersleepRecMins);
+            othersleepRecHours =- 1;
+        }
+        if (othersleepRecHours < 0){
+            othersleepRecHours = 24 + othersleepRecHours;
+        }
+        Time othersleeprec = new Time(othersleepRecHours, othersleepRecMins);
+        return "According to your set goals, you should sleep at: " + sleeprec.toString()
+        +"\n For sleeping 5-6 cycles, you should sleep at: " + "this aint working" + bestsleeprec.toString()
+        + "\n For less cycles, sleep at: " + "will work on this" + othersleeprec.toString();  // change name to goalsleeprec
+
+    }
     //     Time sleeprec = new Time(sleepRecHours, sleepRecMins);
     //     String toreturn = sleeprec.toString();
     //     //now check if best, and calculate other options
@@ -429,8 +447,6 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
         //Best Recommendation using goal sleep hours, wake up time and sleep time.
         //Checks if fits with recommended sleep hours according to age
             // check duration/hours, ie: if recommendation is 8, make sure fits with recommendation for age)
-
-
   //  }
 
     public int[] getAgeSleepHours(){    
@@ -565,7 +581,7 @@ class Schedule extends JPanel /*implements MouseListener*/{
 
     public void addEvent(DayNode a, Event e){
         int i=0;
-        while(e.compareto(calendar.get(i))==1){
+        while(e.compareTo(calendar.get(i))==1){
             i++;
         }
         calendar.add(i, e);
@@ -596,7 +612,7 @@ class Event{
         title = t;
     }
 
-    public int compareto(Event other){
+    public int compareTo(Event other){
         if(this.start.meridiem=="AM" && other.start.meridiem == "PM"){
             return -1;
         }
@@ -611,7 +627,7 @@ class Event{
                 return -1;
             }
             if (this.start.hours == other.start.hours) {
-                if (this.start.hours > other.start.hours) {
+                if (this.start.minutes > other.start.minutes) {
                     return 1;
                 }
                 if (this.start.minutes < other.start.minutes) {
