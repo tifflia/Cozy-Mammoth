@@ -524,7 +524,7 @@ class Schedule extends JPanel /*implements MouseListener*/{
 
     public void addEvent(DayNode a, Event e){
         int i=0;
-        while(e.compareto(calendar.get(i))==1){
+        while(e.compareTo(calendar.get(i))==1){
             i++;
         }
         calendar.add(i, e);
@@ -555,7 +555,7 @@ class Event{
         title = t;
     }
 
-    public int compareto(Event other){
+    public int compareTo(Event other){
         if(this.start.meridiem=="AM" && other.start.meridiem == "PM"){
             return -1;
         }
@@ -570,7 +570,7 @@ class Event{
                 return -1;
             }
             if (this.start.hours == other.start.hours) {
-                if (this.start.hours > other.start.hours) {
+                if (this.start.minutes > other.start.minutes) {
                     return 1;
                 }
                 if (this.start.minutes < other.start.minutes) {
