@@ -72,13 +72,7 @@ public class Main extends JPanel implements MouseListener{
         // SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal());
         //System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
         SleepNode testMonday = new SleepNode(bedTime, wakeTime, "I woke up very refreshed.", 5);
-<<<<<<< HEAD
-        SleepJournal testJournal = new SleepJournal();
-        System.out.println(testJournal.getJournal());
-        // SleepHistory testHistory = new SleepHistory(testMonday, testJournal);
-=======
         SleepHistory testHistory = new SleepHistory(testMonday);
->>>>>>> 841816da724e5e99430b9cf2c96c651aabb89538
         //fix
         // System.out.println(testHistory.getAverageDuration());
     }
@@ -437,7 +431,6 @@ class SleepHistory extends JPanel /*implements MouseListener*/{
 
 
     public SleepHistory(SleepNode day){
->>>>>>> 841816da724e5e99430b9cf2c96c651aabb89538
         // set null
         // make it add the day (figure out how to keep day of week in SleepNode)
         sleepHistory = new ArrayList<SleepNode>();
