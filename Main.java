@@ -776,11 +776,12 @@ class Schedule extends JPanel /*implements MouseListener*/{
 class DayNode{
     ArrayList <String> eventList;
 
+    Date date;
+
     public DayNode(){
         ArrayList <String> eventList = new ArrayList<>();
+        date = new Date();
     }
-    //ask if they want add event method
-
 }
 
 class Event{
