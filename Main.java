@@ -660,20 +660,25 @@ class LogSleep extends JPanel /*implements MouseListener*/{
         //-----------------logPanel1-----------------
         Color bg = new Color(42, 54, 89);
         logPanel1.setBackground(bg);
+        logPanel1.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
 
         Box mainBox1 = Box.createVerticalBox();
         logPanel1.add(mainBox1);
 
         //exit arrow
-        Box exitBox = Box.createVerticalBox();
-        mainBox1.add(exitBox);
         ImageIcon exitIcon = new ImageIcon("graphics/cross.png");
         JLabel exitLabel = new JLabel();
         exitLabel.setIcon(exitIcon);
+
+        Box exitBox = Box.createVerticalBox();
         exitBox.add(exitLabel);
+        mainBox1.add(exitBox);
+
         exitLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        // exitLabel.setHorizontalTextPosition(JLabel.LEFT);
-        exitBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        exitLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,440));
+
+        exitBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+        exitBox.add(Box.createHorizontalGlue());
         
 
         //title label
@@ -683,7 +688,7 @@ class LogSleep extends JPanel /*implements MouseListener*/{
         title1.setForeground(Color.WHITE);
         title1.setFont(new Font("Arial", Font.PLAIN, 25));
         title1.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
-        // title1.setBorder(BorderFactory.createEmptyBorder(150,0,100,0));
+        title1.setBorder(BorderFactory.createEmptyBorder(100,0,100,0));
 
         Box sleepBox = Box.createHorizontalBox();
         Box sleepBoxWrap = Box.createVerticalBox();
@@ -730,6 +735,7 @@ class LogSleep extends JPanel /*implements MouseListener*/{
         //sleepBox (horizontal) --> sleepBoxWrap (vertical)
         sleepBoxWrap.add(sleepBox);
         sleepBoxWrap.setAlignmentX(Component.CENTER_ALIGNMENT);
+        sleepBoxWrap.setBorder(BorderFactory.createEmptyBorder(0,100,0,100));
 
         // wakeup (text + label + text + combobox)
         wakeBox.add(logHrsFields[2]);
@@ -738,17 +744,19 @@ class LogSleep extends JPanel /*implements MouseListener*/{
         wakeBox.add(wakeupCB);
         //wakeup styling
         logHrsFields[2].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-        logHrsFields[3].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        logHrsFields[3].setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
         wakeBox.setAlignmentY(Component.CENTER_ALIGNMENT);
         //wakeBox (horizontal) --> wakeBoxWrap (vertical)
         wakeBoxWrap.add(wakeBox);
         wakeBoxWrap.setAlignmentX(Component.CENTER_ALIGNMENT);
+        wakeBoxWrap.setBorder(BorderFactory.createEmptyBorder(0,100,0,100));
 
         JLabel toLabel = new JLabel("TO");
         //"to" styling
         toLabel.setForeground(Color.WHITE);
         toLabel.setFont(new Font("Arial", Font.BOLD, 25));
         toLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        toLabel.setBorder(BorderFactory.createEmptyBorder(20,0,20,0));
 
         mainBox1.add(sleepBoxWrap);
         mainBox1.add(toLabel);
@@ -762,7 +770,8 @@ class LogSleep extends JPanel /*implements MouseListener*/{
         mainBox1.add(buttonWrap1);
 
         button1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        buttonWrap1.setBorder(BorderFactory.createEmptyBorder(50,0,0,0));
+        buttonWrap1.setBorder(BorderFactory.createEmptyBorder(100,0,0,0));
+        buttonWrap1.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         button1.setMargin(new Insets(10,50,10,50));
         Color buttColor = new Color(80, 121, 242);
@@ -772,9 +781,106 @@ class LogSleep extends JPanel /*implements MouseListener*/{
         button1.setForeground(Color.WHITE);
         button1.setFont(new Font("Arial", Font.PLAIN, 15));
 
+        button1.addMouseListener(new MouseListener() {
+			public void mousePressed(MouseEvent e) {
+                Color clickedButtColor = new Color(51, 77, 156);
+                button1.setBackground(clickedButtColor);
+				System.out.println("button has been pressed");
+
+                //check bedtime
+                int bedHours = Integer.parseInt(logHrsFields[0].getText());
+                int bedMins = Integer.parseInt(logHrsFields[1].getText());
+                boolean validBed = Time.checkTime(bedHours, bedMins);
+                String bedMeridiem = bedtimeCB.getSelectedItem().toString();
+                System.out.println(bedHours + ":" + bedMins + " " + bedMeridiem);
+                System.out.println(validBed);
+                //check wakeup
+                int wakeHours = Integer.parseInt(logHrsFields[2].getText());
+                int wakeMins = Integer.parseInt(logHrsFields[3].getText());
+                boolean validWake = Time.checkTime(wakeHours, wakeMins);
+                String wakeMeridiem = wakeupCB.getSelectedItem().toString();
+                System.out.println(wakeHours + ":" + wakeMins + " " + wakeMeridiem);
+                System.out.println(validWake);
+
+                //set LogSleep's sleepTime and wakeTime
+                if(validBed && validWake) {
+                    Time bed = new Time(Time.convertHours(bedHours, bedMeridiem), bedMins);
+                    Time wake = new Time(Time.convertHours(wakeHours, wakeMeridiem), wakeMins);
+                    mainInstance.LogSleep.setSleepTime(bed);
+                    mainInstance.LogSleep.setWakeTime(wake);
+
+                    //switch to logPanel2
+                    mainInstance.LogSleep.logcl.show(mainInstance.LogSleep, "2");
+                }
+			}
+            public void mouseReleased(MouseEvent e) {
+                button1.setBackground(buttColor);
+            }
+            public void mouseEntered(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {}
+            public void mouseClicked(MouseEvent e) {}
+		});
+
 
         //-----------------logPanel2-----------------
+        logPanel2.setBackground(bg);
+        logPanel2.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
 
+        Box mainBox2 = Box.createVerticalBox();
+        logPanel2.add(mainBox2);
+
+        //exit arrow
+        ImageIcon backIcon = new ImageIcon("graphics/angle-left.png");
+        JLabel backLabel = new JLabel();
+        backLabel.setIcon(backIcon);
+
+        Box backBox = Box.createVerticalBox();
+        backBox.add(backLabel);
+        mainBox2.add(backBox);
+
+        backLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        backLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,440));
+
+        backBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backBox.add(Box.createHorizontalGlue());
+        
+
+        //title label
+        JLabel title2 = new JLabel("How would you rate your sleep?");
+        mainBox2.add(title2);
+        //title1 styling
+        title2.setForeground(Color.WHITE);
+        title2.setFont(new Font("Arial", Font.PLAIN, 25));
+        title2.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+        title2.setBorder(BorderFactory.createEmptyBorder(50,0,100,0));
+
+        //QUALITY/RATING box
+        Box ratingBox = Box.createHorizontalBox();
+        Box ratingBoxWrap = Box.createVerticalBox();
+
+        //rating face icons
+        JLabel[] faces = new JLabel[5];
+
+        for(int i = 0; i < 5; i++) {
+            ImageIcon faceIcon = new ImageIcon("graphics/" + (i+1) + ".png");
+            faces[i] = new JLabel();
+            faces[i].setIcon(faceIcon);
+
+            ratingBox.add(faces[i]);
+        }
+
+        //styling
+        ratingBox.setAlignmentY(Component.CENTER_ALIGNMENT);
+        //ratingBox (horizontal) --> ratingBoxWrap (vertical)
+        ratingBoxWrap.add(ratingBox);
+        ratingBoxWrap.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // ratingBoxWrap.setBorder(BorderFactory.createEmptyBorder(0,100,0,100));
+
+        JLabel subtitle1 = new JLabel("Quality");
+        subtitle1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainBox2.add(subtitle1);
+        
+        mainBox2.add(ratingBoxWrap);
     }
 
     //Getter and setter methods for sleep time and wake time
