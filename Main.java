@@ -100,6 +100,7 @@ public class Main extends JPanel{
         System.out.println(testRec.getSleepRecsMessages(2) + testRec.getSleepRecs(2));
         System.out.println(testRec.getSleepRecsMessages(3) + testRec.getSleepRecs(3));
         System.out.println(testRec.getSleepRecsMessages(4) + testRec.getSleepRecs(4));
+        System.out.println(testRec.sleepHistorySummary(testMonday));
 
         //fix
         // System.out.println(testHistory.getAverageDuration());
@@ -952,49 +953,6 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
         sleepRecs = new Time[5];    //contains 5 recommended times.
         sleepRecsMessages = new String[5];
     }
-    
-    // public Time calcGoalRec(Time waketime){
-    //     //calculate goal sleep
-    //     int sleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
-    //     int sleepRecHours = (wakeTime.getHour() - sleepGoal);
-    //     if (sleepRecMins < 0){
-    //         sleepRecMins = 60 - Math.abs(sleepRecMins);
-    //         sleepRecHours =- 1;
-    //     }
-    //     if (sleepRecHours < 0){
-    //         sleepRecHours = 24 + sleepRecHours;
-    //     }
-    //     sleepRecs[0] = new Time(sleepRecHours, sleepRecMins);   //contains sleep recommendation based on sleep goal
-    //     sleepRecsMessages[0] = "According to your set goals, you should sleep at: ";
-    // }
-
-    // public Time calcAgeRec(Time wakeTime, int age){
-    //     //calculate best sleep
-    //     int hoursubtractor;
-    //     int[] possibleCycles = getAgeSleepHours(age);
-    //     for (int hour : possibleCycles){
-    //         hoursubtractor = hour;
-    //         if (sleepGoal < hour){
-    //             int sleepRecMins = (wakeTime.getMinutes() - 15);
-    //             int sleepRecHours = (wakeTime.getHour() - sleepGoal);
-    //         } else{
-    //             hoursubtractor += 2
-    //         }
-    //         }
-    //     }
-    //     int sleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
-    //     int sleepRecHours = (wakeTime.getHour() - sleepGoal);
-    //     if (sleepRecMins < 0){  // make own method or something, generic/extends?
-    //         sleepRecMins = 60 - Math.abs(sleepRecMins);
-    //         sleepRecHours =- 1;
-    //     }
-    //     if (sleepRecHours < 0){
-    //         sleepRecHours = 24 + sleepRecHours;
-    //     }
-    //     sleepRecs[0] = new Time(sleepRecHours, sleepRecMins);   //contains sleep recommendation based on sleep goal
-    //     sleepRecsMessages[0] = "According to your set goals, you should sleep at: ";
-    // }
-
 
     public Time[] calculateSleepRec(){
         /*returns array of 5 recommended times. [0] = sleepGoalRec (based on inputted goals)
@@ -1082,33 +1040,11 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
         if (othersleepRecHours < 0){
             // validation --> if rec is negative/less than 0 hours, then wrong. don't show/null.
         }
-        //have 2 other calcualtions too, [2] and [3]
 
         return sleepRecs;
 
     }
-    //     Time sleeprec = new Time(sleepRecHours, sleepRecMins);
-    //     String toreturn = sleeprec.toString();
-    //     //now check if best, and calculate other options
-    //     int[] userAgeSleepHours = getAgeSleepHours();
-    //     boolean matchAge = true;
-        
-    //     for (int i = 0; i < userAgeSleepHours.length; i++){
-    //         if (sleepGoal == userAgeSleepHours[i]){     //goal hours matches recommendation for age
-           
-    //         }
-    //         else{matchAge = false;}
-    //     }
-    //     if (matchAge = false){  //check other hours in age range
-    //         for (int i = 0; i < userAgeSleepHours.length; i++){
-
-    //         }
-    //     }
-        //Best Recommendation using goal sleep hours, wake up time and sleep time.
-        //Checks if fits with recommended sleep hours according to age
-            // check duration/hours, ie: if recommendation is 8, make sure fits with recommendation for age)
-  //  }
-
+  
     public int[] getAgeSleepHours(int age){    
         //get recommended hours of sleep by age
         if (age <= 0.25){ //newborn
@@ -1144,6 +1080,16 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
 
     public String getSleepRecsMessages(int index){
         return sleepRecsMessages[index];
+    }
+
+    public String sleepHistorySummary(SleepNode curr){
+        //if average of durations of past week/7 days is < sleep goal hours,
+        if (4/2 != 3){
+            return "You haven't been meeting your sleep goal. Try to sleep more today!";
+        }
+        //else if average is sleep goal at least -- counter > 0 && counter < 4:
+        return "Good! You met your goal n times over the past 7 days";
+        //else if coutner >= 4, return "Great! You met your goal n times in the past 7 days.";
     }
 
     //graphics for sleeprecommendation.
