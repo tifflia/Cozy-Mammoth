@@ -244,7 +244,7 @@ class Welcome extends JPanel implements MouseListener{
         title.setBorder(BorderFactory.createEmptyBorder(150,0,100,0));
 
         //resizing logo
-        ImageIcon logo = new ImageIcon("logo.png");
+        ImageIcon logo = new ImageIcon("graphics/logo.png");
         Image image = logo.getImage(); //transform it 
         Image newimg = image.getScaledInstance(250, 250, java.awt.Image.SCALE_SMOOTH); //scale down
         logo = new ImageIcon(newimg); //transform back
