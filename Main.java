@@ -17,18 +17,18 @@ import java.util.Random;
 import java.util.Date;
 import java.util.Scanner;
 
-public class Main extends JPanel implements MouseListener{
+public class Main extends JPanel{
     public static final int WIDTH = 500;
     public static final int HEIGHT = 750;
 
-    User user;
+    User user /* = new User("John",18,8,new Time(0,0),new Time(8,0))*/;
 
     static JFrame frame = new JFrame("CozyMammoth");
 
-    //App Pages
-    JPanel Welcome = new JPanel();
-    JPanel NewUser = new JPanel();
-    JPanel Home = new JPanel();
+    //App Pages (JPanels)
+    Welcome Welcome = new Welcome(this);
+    NewUser NewUser = new NewUser(this);
+    Home Home = new Home(this);
     JPanel SleepHistory = new JPanel();
     JPanel LogSleep1 = new JPanel();
     JPanel LogSleep2 = new JPanel();
@@ -40,12 +40,9 @@ public class Main extends JPanel implements MouseListener{
 
     //constructor
     public Main(){
-        addMouseListener(this);
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
         //initialize JPanels
-        initWelcome();
-        initNewUser();
     }
 
     public static void main(String[] args){
@@ -58,6 +55,7 @@ public class Main extends JPanel implements MouseListener{
         mainInstance.setLayout(mainInstance.cl);
         mainInstance.add(mainInstance.Welcome, "1");
         mainInstance.add(mainInstance.NewUser, "2");
+        mainInstance.add(mainInstance.Home, "3");
         //continue adding panels
 
         frame.setContentPane(mainInstance); //showing Welcome because it's the first panel added
@@ -106,14 +104,133 @@ public class Main extends JPanel implements MouseListener{
     //         e.printStackTrace();
     //     }
     // }
+}
 
-    //Main Welcome page
-    private void initWelcome() {
+class User{
+    private String name;
+    private double age;
+    private int sleepGoal;
+    private Time bedTime;
+    private Time wakeTime;
+
+    //constructor
+    public User(String userName, double userAge, int sleep, Time bed, Time wake) {
+        name = userName;
+        age = userAge;
+        sleepGoal = sleep;
+        bedTime = bed;
+        wakeTime = wake;
+    }
+    //field getters and setters
+    public void setName(String newName) {
+        name = newName;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setAge(double newAge) {
+        age = newAge;
+    }
+    public double getAge() {
+        return age;
+    }
+    public void setSleepGoal(int newGoal) {
+        sleepGoal = newGoal;
+    }
+    public int getSleepGoal() {
+        return sleepGoal;
+    }
+    public void setBedTime(Time newTime) {
+        bedTime = newTime;
+    }
+    public Time getBedTime() {
+        return bedTime;
+    }
+    public void setWakeTime(Time newTime) {
+        wakeTime = newTime;
+    }
+    public Time getWakeTime() {
+        return wakeTime;
+    }
+}
+
+class Time{
+    //calculated in military time
+    int hours; //0-24 (excluded)
+    int minutes;//0-60 (excluded)
+    String meridiem; //AM or PM
+
+    //constructor
+    public Time(int h, int m) {
+        //don't use checktime here, use it when whatever action is registered
+        hours = h;
+        minutes = m;
+        if(hours <= 12) meridiem = "AM";
+        else meridiem = "PM";
+    }
+
+    //add getters and setters?
+    public int getHour(){
+        return hours;
+    }
+    public int getMinutes(){
+        return minutes;
+    }
+
+    //user input -> military time
+    public static int convertHours(int h, String time) {
+        if(time.equals("AM")){
+            //if 12am, return 0
+            if(h == 12) return 0;
+            return h;
+        }
+        else {
+            //if 12pm, return 12
+            if(h == 12) return h;
+            return h+12;
+        }
+    }
+
+    //check if the inputted time is within the appropriate bounds
+    public static boolean checkTime(int h, int m) {
+        return (h > 0 && h <= 12) && (m >= 0 && m < 60);
+    }
+
+    //will return as "00:00 PM/AM"
+    public String toString() {
+        String toReturn = "";
+        //hours
+        if(hours <= 12) {
+            if(hours == 0) toReturn += 12;
+            else toReturn += hours;
+        }
+        else {
+            toReturn += (hours-12);
+        }
+        //mins
+        if(minutes < 10) {
+            toReturn += ":" + 0 + "" + minutes + " " + meridiem;
+        }
+        else {
+            toReturn += ":" + minutes + " " + meridiem;
+        }
+        return toReturn;
+    }
+}
+
+//Welcome page Jpanel
+class Welcome extends JPanel implements MouseListener{
+    Main mainInstance;
+
+    public Welcome(Main main){
+        mainInstance = main;
+        addMouseListener(this);
+
         Color bg = new Color(60, 86, 166);
-        this.Welcome.setBackground(bg);
+        this.setBackground(bg);
 
         Box box = Box.createVerticalBox();
-        this.Welcome.add(box);
+        this.add(box);
 
         JLabel title = new JLabel("Cozy Mammoth");
         box.add(title);
@@ -143,15 +260,39 @@ public class Main extends JPanel implements MouseListener{
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
     }
 
-    //New User page
-    private void initNewUser() {
+    //MOUSELISTENER (navigation)
+    public void mousePressed(MouseEvent e) {
+        System.out.println("Mouse pressed detected on " + e.getComponent().getClass().getName() + ".");
+
+        //if no User has been initialized, pull up the NewUser panel
+        if(mainInstance.user == null) {
+            mainInstance.cl.show(mainInstance, "2");
+        }
+        //otherwise, pull up the Home Panel
+        else {
+            mainInstance.cl.show(mainInstance, "3");
+        }
+    }
+    public void mouseReleased(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {}
+}
+
+//NewUser page Jpanel
+class NewUser extends JPanel{
+    Main mainInstance;
+
+    public NewUser(Main main){
+        mainInstance = main;
+
         Color bg = new Color(37,44,64);
-        this.NewUser.setBackground(bg);
-        this.NewUser.setBorder(BorderFactory.createEmptyBorder(50,50,50,50));
+        this.setBackground(bg);
+        this.setBorder(BorderFactory.createEmptyBorder(50,50,50,50));
 
         //main box
         Box box = Box.createVerticalBox();
-        this.NewUser.add(box);
+        this.add(box);
 
         JLabel title = new JLabel("Welcome!");
         box.add(title);
@@ -295,142 +436,81 @@ public class Main extends JPanel implements MouseListener{
         button.setForeground(Color.WHITE);
         button.setFont(new Font("Arial", Font.PLAIN, 15));
 
+        //MOUSELISTENER (for button)
         button.addMouseListener(new MouseListener() {
-			@Override
 			public void mousePressed(MouseEvent e) {
                 Color clickedButtColor = new Color(51, 77, 156);
                 button.setBackground(clickedButtColor);
 				System.out.println("button has been pressed");
+
+                //check age
+                double age = Double.parseDouble(texts[1].getText());
+                boolean validAge = (age > 0);
+                //check sleepGoal
+                int sleepGoal = Integer.parseInt(texts[2].getText());
+                boolean validSleepGoal = (sleepGoal > 0);
+                //check bedtime
+                int bedHours = Integer.parseInt(texts[3].getText());
+                int bedMins = Integer.parseInt(texts[4].getText());
+                boolean validBed = Time.checkTime(bedHours, bedMins);
+                String bedMeridiem = bedtimeCB.getSelectedItem().toString();
+                System.out.println(bedHours + ":" + bedMins + " " + bedMeridiem);
+                System.out.println(validBed);
+                //check wakeup
+                int wakeHours = Integer.parseInt(texts[5].getText());
+                int wakeMins = Integer.parseInt(texts[6].getText());
+                boolean validWake = Time.checkTime(wakeHours, wakeMins);
+                String wakeMeridiem = wakeupCB.getSelectedItem().toString();
+                System.out.println(wakeHours + ":" + wakeMins + " " + wakeMeridiem);
+                System.out.println(validWake);
+
+                //initialize the new user to the mainInstance
+                if(validAge && validSleepGoal && validBed && validWake) {
+                    //User(String userName, double userAge, int sleep, Time bed, Time wake)
+                    Time bed = new Time(Time.convertHours(bedHours, bedMeridiem), bedMins);
+                    Time wake = new Time(Time.convertHours(wakeHours, wakeMeridiem), wakeMins);
+                    mainInstance.user = new User(texts[0].getText(), age, sleepGoal, bed, wake);
+
+                    //switch to home page
+                    mainInstance.Home = new Home(mainInstance); //have to "reset" the home page in mainInstance
+                    mainInstance.add(mainInstance.Home,"3"); //update the old home in the cardlayout
+                    mainInstance.cl.show(mainInstance, "3");
+                }
 			}
             public void mouseReleased(MouseEvent e) {
                 button.setBackground(buttColor);
             }
             public void mouseEntered(MouseEvent e) {}
             public void mouseExited(MouseEvent e) {}
-            public void mouseClicked(MouseEvent e) {
-                //check if the values for age, sleep goal, bedtime, and wake up are valid
-                // if(Time.checkTime()){}
-
-                //textfield.getText(); = string
-                //combobox.getSelectedItem(); = string
-            }
+            public void mouseClicked(MouseEvent e) {}
 		});
     }
-
-    //MOUSELISTENER THINGS
-    public void mousePressed(MouseEvent e) {
-        System.out.println("Mouse pressed detected on " + e.getComponent().getClass().getName() + ".");
-
-        //if no User has been initialized, pull up the NewUser panel
-        if(this.user == null) {
-            this.cl.show(this, "2");
-        }
-        //otherwise, pull up the Home Panel
-        else {
-            
-        }
-    }
-    public void mouseReleased(MouseEvent e) {}
-    public void mouseEntered(MouseEvent e) {}
-    public void mouseExited(MouseEvent e) {}
-    public void mouseClicked(MouseEvent e) {}
 }
 
-class User{
-    private String name;
-    private double age;
-    private int sleepGoal;
-    private Time bedTime;
-    private Time wakeTime;
+class Home extends JPanel{
+    Main mainInstance;
 
-    //constructor
-    public User(String userName, double userAge, int sleep, Time bed, Time wake) {
-        name = userName;
-        age = userAge;
-        sleepGoal = sleep;
-        bedTime = bed;
-        wakeTime = wake;
-    }
-    //field getters and setters
-    public void setName(String newName) {
-        name = newName;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setAge(double newAge) {
-        age = newAge;
-    }
-    public double getAge() {
-        return age;
-    }
-    public void setSleepGoal(int newGoal) {
-        sleepGoal = newGoal;
-    }
-    public int getSleepGoal() {
-        return sleepGoal;
-    }
-    public void setBedTime(Time newTime) {
-        bedTime = newTime;
-    }
-    public Time getBedTime() {
-        return bedTime;
-    }
-    public void setWakeTime(Time newTime) {
-        wakeTime = newTime;
-    }
-    public Time getWakeTime() {
-        return wakeTime;
-    }
-}
+    public Home(Main main) {
+        mainInstance = main;
 
-class Time{
-    //calculated in military time
-    int hours; //0-24 (excluded)
-    int minutes;//0-60 (excluded)
-    String meridiem; //AM or PM
+        Color bg = new Color(37,44,64);
+        this.setBackground(bg);
+        this.setBorder(BorderFactory.createEmptyBorder(40,20,40,20));
 
-    //constructor
-    public Time(int h, int m) {
-        //don't use checktime here, use it when whatever action is registered
-        hours = h;
-        minutes = m;
-        if(hours <= 12) meridiem = "AM";
-        else meridiem = "PM";
-    }
+        //main box
+        Box box = Box.createVerticalBox();
+        this.add(box);
 
-    //add getters and setters?
-    public int getHour(){
-        return hours;
-    }
-    public int getMinutes(){
-        return minutes;
-    }
+        if(mainInstance.user != null) {
+            System.out.println("user isn't null!");
+            JLabel title = new JLabel("Welcome, " + mainInstance.user.getName());
+            box.add(title);
 
-    //check if the inputted time is within the appropriate bounds
-    public static boolean checkTime(int h, int m) {
-        return (h >= 0 && h < 24) && (m >= 0 && m < 60);
-    }
-
-    //will return as "00:00 PM/AM"
-    public String toString() {
-        String toReturn = "";
-        //hours
-        if(hours <= 12) {
-            if(hours == 0) toReturn += 12;
-            else toReturn += hours;
+            title.setForeground(Color.WHITE);
+            title.setFont(new Font("Arial", Font.PLAIN, 25));
+            title.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+            title.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
         }
-        else {
-            toReturn += (hours-12);
-        }
-        //mins
-        if(minutes < 10) {
-            toReturn += ":" + 0 + "" + minutes + " " + meridiem;
-        }
-        else {
-            toReturn += ":" + minutes + " " + meridiem;
-        }
-        return toReturn;
     }
 }
 
