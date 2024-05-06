@@ -30,8 +30,8 @@ public class Main extends JPanel{
     NewUser NewUser = new NewUser(this);
     Home Home = new Home(this);
     JPanel SleepHistory = new JPanel();
-    JPanel LogSleep1 = new JPanel();
-    JPanel LogSleep2 = new JPanel();
+    LogSleep LogSleep = new LogSleep(this);
+    // JPanel LogSleep2 = new JPanel();
     JPanel SleepRecs = new JPanel();
     JPanel Schedule = new JPanel();
     JPanel Settings = new JPanel();
@@ -58,8 +58,6 @@ public class Main extends JPanel{
     public Main(){
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
-        //initialize JPanels?
-
         //Thread that updates the currentDate
         Thread mainThread = new Thread(new Runner());
         mainThread.start();
@@ -76,6 +74,7 @@ public class Main extends JPanel{
         mainInstance.add(mainInstance.Welcome, "1");
         mainInstance.add(mainInstance.NewUser, "2");
         mainInstance.add(mainInstance.Home, "3");
+        mainInstance.add(mainInstance.LogSleep, "4");
         //continue adding panels
 
         frame.setContentPane(mainInstance); //showing Welcome because it's the first panel added
@@ -531,54 +530,289 @@ class Home extends JPanel{
         this.add(box);
 
         if(mainInstance.user != null) {
-            System.out.println("user isn't null!");
+            Box header = Box.createVerticalBox();
+
             JLabel title = new JLabel("Welcome, " + mainInstance.user.getName());
-            box.add(title);
+            header.add(title);
 
             title.setForeground(Color.WHITE);
-            title.setFont(new Font("Arial", Font.PLAIN, 25));
+            title.setFont(new Font("Arial", Font.PLAIN, 20));
             title.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
             title.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+            JLabel date = new JLabel("[Date Placeholder]");
+            header.add(date);
+
+            date.setForeground(Color.WHITE);
+            Color bg2 = new Color(54,75,140);
+            date.setBackground(bg2);
+            date.setOpaque(true);
+            date.setFont(new Font("Arial", Font.PLAIN, 15));
+            date.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+            date.setBorder(BorderFactory.createEmptyBorder(10,40,10,40));
+
+            header.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
+            box.add(header);
+
+            JPanel mainWrap = new JPanel(new GridLayout(2,1)); //2 rows, 1 col
+            box.add(mainWrap);
+
+            JPanel graphPanel = new JPanel(); //placeholder for graph
+            mainWrap.add(graphPanel);
+
+            //graph panel styling
+            graphPanel.setBackground(bg2);
+            graphPanel.setBorder(BorderFactory.createEmptyBorder(130,200,130,200));
+
+            JPanel optionsPanel = new JPanel(new GridLayout(2,2,10,20)); //2 rows, 2 cols
+            mainWrap.add(optionsPanel);
+
+            //option panel styling
+            optionsPanel.setBackground(bg);
+            optionsPanel.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+
+            //creating the option labels
+            JLabel[] options = new JLabel[4];
+            options[0] = new JLabel("Sleep Tips");
+            options[1] = new JLabel("Log Sleep");
+            options[2] = new JLabel("Sleep History");
+            options[3] = new JLabel("Settings");
+
+            //creating the option icons
+            ImageIcon[] icons = new ImageIcon[4];
+            icons[0] = new ImageIcon("graphics/tipsIcon.png");
+            icons[1] = new ImageIcon("graphics/logIcon.png");
+            icons[2] = new ImageIcon("graphics/historyIcon.png");
+            icons[3] = new ImageIcon("graphics/settingsIcon.png");
+
+            //adding option labels to options panel
+            for(int i = 0; i < 4; i++) {
+                optionsPanel.add(options[i]);
+
+                //options label styling
+                options[i].setForeground(Color.WHITE);
+                options[i].setFont(new Font("Arial", Font.PLAIN, 15));
+                options[i].setHorizontalTextPosition(JLabel.CENTER);
+                options[i].setVerticalTextPosition(JLabel.BOTTOM);
+                options[i].setHorizontalAlignment(JLabel.CENTER);
+
+                //adding option icons to the labels
+                options[i].setIcon(icons[i]);
+                options[i].setIconTextGap(15);
+            }
+
+            //adding nav functionality to the option labels
+            options[0].addMouseListener(new MouseListener() {
+                public void mousePressed(MouseEvent e) {}
+                public void mouseReleased(MouseEvent e) {}
+                public void mouseEntered(MouseEvent e) {}
+                public void mouseExited(MouseEvent e) {}
+                public void mouseClicked(MouseEvent e) {System.out.println("Sleep Tips pressed");}
+            });
+            options[1].addMouseListener(new MouseListener() {
+                public void mousePressed(MouseEvent e) {}
+                public void mouseReleased(MouseEvent e) {}
+                public void mouseEntered(MouseEvent e) {}
+                public void mouseExited(MouseEvent e) {}
+                public void mouseClicked(MouseEvent e) {
+                    System.out.println("Log Sleep pressed");
+                    mainInstance.cl.show(mainInstance, "4");
+                }
+            });
+            options[2].addMouseListener(new MouseListener() {
+                public void mousePressed(MouseEvent e) {}
+                public void mouseReleased(MouseEvent e) {}
+                public void mouseEntered(MouseEvent e) {}
+                public void mouseExited(MouseEvent e) {}
+                public void mouseClicked(MouseEvent e) {System.out.println("Sleep History pressed");}
+            });
+            options[3].addMouseListener(new MouseListener() {
+                public void mousePressed(MouseEvent e) {}
+                public void mouseReleased(MouseEvent e) {}
+                public void mouseEntered(MouseEvent e) {}
+                public void mouseExited(MouseEvent e) {}
+                public void mouseClicked(MouseEvent e) {System.out.println("Settings pressed");}
+            });
         }
     }
 }
 
+//LogSleep page Jpanel
 class LogSleep extends JPanel /*implements MouseListener*/{
-    private int wakeTime;
-    private int sleepTime;
+    private Time sleepTime;
+    private Time wakeTime;
+    private int rating; //sleep quality rating from 1-5
+    private String sleepNote;
 
-    public LogSleep(int sleepTime, int wakeTime) {
-        this.sleepTime = sleepTime;
-        this.wakeTime = wakeTime;
+    Main mainInstance;
+    CardLayout logcl = new CardLayout();
+    JPanel logPanel1 = new JPanel();
+    JPanel logPanel2 = new JPanel();
+
+    public LogSleep(Main main) {
+        mainInstance = main;
+
+        //two pages within LogSleep - access through cardlayout
+        this.setLayout(logcl);
+        this.add(logPanel1, "1");
+        this.add(logPanel2, "2");
+
+        //-----------------logPanel1-----------------
+        Color bg = new Color(42, 54, 89);
+        logPanel1.setBackground(bg);
+
+        Box mainBox1 = Box.createVerticalBox();
+        logPanel1.add(mainBox1);
+
+        //exit arrow
+        Box exitBox = Box.createVerticalBox();
+        mainBox1.add(exitBox);
+        ImageIcon exitIcon = new ImageIcon("graphics/cross.png");
+        JLabel exitLabel = new JLabel();
+        exitLabel.setIcon(exitIcon);
+        exitBox.add(exitLabel);
+        exitLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // exitLabel.setHorizontalTextPosition(JLabel.LEFT);
+        exitBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+
+        //title label
+        JLabel title1 = new JLabel("How long did you sleep for?");
+        mainBox1.add(title1);
+        //title1 styling
+        title1.setForeground(Color.WHITE);
+        title1.setFont(new Font("Arial", Font.PLAIN, 25));
+        title1.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+        // title1.setBorder(BorderFactory.createEmptyBorder(150,0,100,0));
+
+        Box sleepBox = Box.createHorizontalBox();
+        Box sleepBoxWrap = Box.createVerticalBox();
+        Box wakeBox = Box.createHorizontalBox();
+        Box wakeBoxWrap = Box.createVerticalBox();
+
+        Color textbg = new Color(211, 221, 252);
+        JTextField[] logHrsFields = new JTextField[4];
+        for(int i = 0; i < 4; i++) {
+            logHrsFields[i] = new JTextField(1);
+
+            //textfield styling
+            logHrsFields[i].setBackground(textbg);
+            logHrsFields[i].setForeground(bg);
+            logHrsFields[i].setFont(new Font("Arial", Font.PLAIN, 25));
+            logHrsFields[i].setCaretColor(bg);
+        }
+
+        String[] meridiems = {"AM", "PM"};
+        JComboBox<String> bedtimeCB = new JComboBox<>(meridiems);
+        JComboBox<String> wakeupCB = new JComboBox<>(meridiems);
+
+        bedtimeCB.setBorder(BorderFactory.createEmptyBorder(0,20,0,0));
+        wakeupCB.setBorder(BorderFactory.createEmptyBorder(0,20,0,0));
+
+        JLabel divider1 = new JLabel(":");
+        JLabel divider2 = new JLabel(":");
+        divider1.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
+        divider1.setFont(new Font("Arial", Font.PLAIN, 25));
+        divider1.setForeground(Color.WHITE);
+        divider2.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
+        divider2.setFont(new Font("Arial", Font.PLAIN, 25));
+        divider2.setForeground(Color.WHITE);
+        
+        // bedtime (text + label + text + combobox)
+        sleepBox.add(logHrsFields[0]);
+        sleepBox.add(divider1);
+        sleepBox.add(logHrsFields[1]);
+        sleepBox.add(bedtimeCB);
+        //bedtime styling
+        logHrsFields[0].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        logHrsFields[1].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        sleepBox.setAlignmentY(Component.CENTER_ALIGNMENT);
+        //sleepBox (horizontal) --> sleepBoxWrap (vertical)
+        sleepBoxWrap.add(sleepBox);
+        sleepBoxWrap.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // wakeup (text + label + text + combobox)
+        wakeBox.add(logHrsFields[2]);
+        wakeBox.add(divider2);
+        wakeBox.add(logHrsFields[3]);
+        wakeBox.add(wakeupCB);
+        //wakeup styling
+        logHrsFields[2].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        logHrsFields[3].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        wakeBox.setAlignmentY(Component.CENTER_ALIGNMENT);
+        //wakeBox (horizontal) --> wakeBoxWrap (vertical)
+        wakeBoxWrap.add(wakeBox);
+        wakeBoxWrap.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel toLabel = new JLabel("TO");
+        //"to" styling
+        toLabel.setForeground(Color.WHITE);
+        toLabel.setFont(new Font("Arial", Font.BOLD, 25));
+        toLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        mainBox1.add(sleepBoxWrap);
+        mainBox1.add(toLabel);
+        mainBox1.add(wakeBoxWrap);
+
+        //BUTTON
+        //adding box that wraps the done button to the main box
+        JButton button1 = new JButton("Continue");
+        Box buttonWrap1 = Box.createVerticalBox();
+        buttonWrap1.add(button1);
+        mainBox1.add(buttonWrap1);
+
+        button1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonWrap1.setBorder(BorderFactory.createEmptyBorder(50,0,0,0));
+
+        button1.setMargin(new Insets(10,50,10,50));
+        Color buttColor = new Color(80, 121, 242);
+        button1.setBackground(buttColor);
+        button1.setOpaque(true);
+        button1.setBorderPainted(false);
+        button1.setForeground(Color.WHITE);
+        button1.setFont(new Font("Arial", Font.PLAIN, 15));
+
+
+        //-----------------logPanel2-----------------
+
     }
 
     //Getter and setter methods for sleep time and wake time
-    public int getSleepTime() {
+    public Time getSleepTime() {
         return sleepTime;
     }
 
-    public void setSleepTime(int sleepTime) {
-        this.sleepTime = sleepTime;
+    public void setSleepTime(Time sleep) {
+        sleepTime = sleep;
     }
 
-    public int getWakeTime() {
+    public Time getWakeTime() {
         return wakeTime;
     }
 
-    public void setWakeTime(int wakeTime) {
-        this.wakeTime = wakeTime;
+    public void setWakeTime(Time wake) {
+        wakeTime = wake;
     }
 
-    public void sleepJournal() {
-        Scanner input = new Scanner(System.in);
-        System.out.print("Enter a sleep journal entry: ");
-        String s = input.nextLine();
+    public int getRating() {
+        return rating;
+    }
 
-        //maybe easier to just have String parameter instead of user input?
-        //alternative
-//        public SleepJournal(String journal){
-//            this.sleepJournal = journal;
-//        }
+    public void setRating(int newRating) {
+        rating = newRating;
+    }
+
+    public String getSleepNote() {
+        return sleepNote;
+    }
+
+    public void setSleepNote(String note) {
+        sleepNote = note;
+    }
+
+    //create a SleepNode (that can be added to SleepHistory)
+    public SleepNode createSleepNode(){
+        return new SleepNode(sleepTime, wakeTime, sleepNote, rating);
     }
 }
 
