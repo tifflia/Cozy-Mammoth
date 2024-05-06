@@ -969,8 +969,10 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
         if (goalsleepRecHours < 0){
             goalsleepRecHours = 24 + goalsleepRecHours;
         }
+        int numOfCycles = goalsleepRecHours
+        ((bestsleepRecHours1 * 60) + bestsleepRecMins1) / 90;
         sleepRecs[0] = new Time(goalsleepRecHours, goalsleepRecMins);   //contains sleep recommendation based on sleep goal
-        sleepRecsMessages[0] = "According to your set goals, you should sleep at: ";
+        sleepRecsMessages[0] = "According to your set goals ( " + numOfCycles + "cycles), you should sleep at: ";
 
         //calculates best sleep times
         int hourSubtractor = 0;
@@ -998,7 +1000,7 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
             bestsleepRecHours1 = 24 + bestsleepRecHours1;
         }
         // int mins = (bestsleepRecHours * 60) + bestsleepRecMins;
-        int numOfCycles = ((bestsleepRecHours1 * 60) + bestsleepRecMins1) / 90;    // check this is right
+        numOfCycles = ((bestsleepRecHours1 * 60) + bestsleepRecMins1) / 90;    // check this is right
         sleepRecs[1] = new Time(bestsleepRecHours1, bestsleepRecMins1); //contains sleep recommendation based on ideal sleep cycles for age
         // if (sleepRecs[1] == sleepRecs[2]){  // if same as goal-based rec, give rec with more sleep cycles
         //     mins += 90;
