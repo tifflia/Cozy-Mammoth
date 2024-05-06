@@ -21,7 +21,7 @@ public class Main extends JPanel{
     public static final int WIDTH = 500;
     public static final int HEIGHT = 750;
 
-    User user /* = new User("John",18,8,new Time(0,0),new Time(8,0))*/;
+    User user = new User("John",18,8,new Time(0,0),new Time(8,0));
 
     static JFrame frame = new JFrame("CozyMammoth");
 
@@ -38,11 +38,31 @@ public class Main extends JPanel{
     //CardLayout to manage JPanel "pages"
     CardLayout cl = new CardLayout();
 
+    //thread to update the current time
+    class Runner implements Runnable{
+        public void run() {
+            while(true){
+                //update the currentDate
+                //get the "currentDate" Date object from Sleephistory and update it every second (= new Date();)
+                try{
+                    Thread.sleep(1000); //every second...
+                }
+                catch(InterruptedException e){}
+            }
+    
+        }
+     
+    }
+
     //constructor
     public Main(){
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
-        //initialize JPanels
+        //initialize JPanels?
+
+        //Thread that updates the currentDate
+        Thread mainThread = new Thread(new Runner());
+        mainThread.start();
     }
 
     public static void main(String[] args){
@@ -77,9 +97,11 @@ public class Main extends JPanel{
         System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
         //fix
         // System.out.println(testHistory.getAverageDuration());
+
+        Date date = new Date();
+
     }
 
-    // //do you need this? if we have initWelcome
     // public void paintComponent(Graphics g) {
     //     super.paintComponent(g);
 
@@ -277,6 +299,12 @@ class Welcome extends JPanel implements MouseListener{
     public void mouseEntered(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}
     public void mouseClicked(MouseEvent e) {}
+
+    // public void paintComponent(Graphics g) {
+    //     super.paintComponent(g);
+
+    //     //would be nice to add the gradient + random stars (from the last hw) to the background of the welcome page
+    // }
 }
 
 //NewUser page Jpanel
@@ -487,6 +515,7 @@ class NewUser extends JPanel{
     }
 }
 
+//Home page JPanel
 class Home extends JPanel{
     Main mainInstance;
 
