@@ -42,12 +42,15 @@ public class Main extends JPanel{
     Settings Settings = new Settings(this);
     //CardLayout to manage JPanel "pages"
     CardLayout cl = new CardLayout();
+    Date dateLastOpened;
+    Date currentDate;
 
     //thread to update the current time
     class Runner implements Runnable{
         public void run() {
             while(true){
                 //update the currentDate
+                
                 //get the "currentDate" Date object from Sleephistory and update it every second (= new Date();)
                 try{
                     Thread.sleep(1000); //every second...
@@ -70,11 +73,6 @@ public class Main extends JPanel{
 
     public static void main(String[] args){
         //jframe stuff
-
-        //*****
-        // look in the directory for the file
-        // check if the file has a date, if it does, compare with current date
-
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
 
@@ -124,31 +122,6 @@ public class Main extends JPanel{
         SleepNode test = new SleepNode(new Time(0,0),new Time(6,0),"My sleep was ok.",3);
         mainInstance.SleepHistory.addDay(test);
     }
-
-    // public void paintComponent(Graphics g) {.
-    //     super.paintComponent(g);
-
-    //     //draw the welcome screen
-    //     Color bg = new Color(60, 86, 166);
-    //     g.setColor(bg);
-    //     g.fillRect(0, 0, WIDTH, HEIGHT);
-
-    //     try {
-    //         BufferedImage logo = ImageIO.read(new File("logo.png"));
-    //         g.drawImage(logo,100,150,300,300,null);
-    //         // Font title = Font.createFont(Font.TRUETYPE_FONT, new File("Rubik.ttf"));
-    //         // g.setColor(Color.WHITE);
-    //         // g.setFont(title);
-    //         // g.drawString("Cozy Mammoth",0,400);
-    //         // // FIGURE OUT FONT LATER
-    //     }
-    //     // catch (FontFormatException e) {
-    //     //     e.printStackTrace();
-    //     // }
-    //     catch (IOException e) { 
-    //         e.printStackTrace();
-    //     }
-    // }
 }
 
 class User{
@@ -573,10 +546,6 @@ class Home extends JPanel{
         this.add(box);
 
         if(mainInstance.user != null) {
-            //*****
-            // create button that runs system.exit()
-            // when button is pressed create processfiles object
-            // get date, savepointtofile, then call system.exit()
             Box header = Box.createVerticalBox();
 
             JLabel title = new JLabel("Welcome, " + mainInstance.user.getName());
@@ -694,7 +663,6 @@ class Home extends JPanel{
                     mainInstance.cl.show(mainInstance, "7");
                 }
             });
-
         }
     }
 }
@@ -1198,6 +1166,7 @@ class SleepRecommendation extends JPanel{
     //hard-coded in so that it could run... change it back when SleepRec is fully implemented - tiffany
     private Time[] sleepRecs = {new Time(1,0),new Time(2,0),new Time(3,0),new Time(4,0),new Time(5,0)}; /*new Time[5];*/    //contains 5 recommended times.
     private String[] sleepRecsMessages = new String[5];
+    String sleepSummary;
     //to reference for graphics for the page within this class
     Main mainInstance;
 
@@ -1534,13 +1503,20 @@ class SleepRecommendation extends JPanel{
 
     public String sleepHistorySummary(SleepNode curr){
         //if average of durations of past week/7 days is < sleep goal hours,
-        if (4/2 != 3){
-            return "You haven't been meeting your sleep goal. Try to sleep more today!";
+        double average = 3;   // get history
+        if (average < 1){
+            sleepSummary = "You haven't been meeting your sleep goal. Try to sleep more today!";
+            return sleepSummary;
+        }
+        else if (average > 0 && average < 4){
+            sleepSummary= "Good! You met your goal n times over the past 7 days";
+            return sleepSummary;
         }
         //else if average is sleep goal at least -- counter > 0 && counter < 4:
-        return "Good! You met your goal n times over the past 7 days";
-        //else if coutner >= 4, return "Great! You met your goal n times in the past 7 days.";
-    }
+        else if (average >= 4){
+            sleepSummary = "Great! You met your goal n times in the past 7 days.";
+            return sleepSummary;
+        //else if coutner >= 4, return "";
 }
 
 class SleepHistory extends JPanel{
