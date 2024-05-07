@@ -1344,8 +1344,8 @@ class SleepRecommendation extends JPanel{
 
     public Time[] calculateSleepRec(){
         /*returns array of 5 recommended times. [0] = sleepGoalRec (based on inputted goals)
-        [1] = highest rec sleep cycles. [2] = 2nd highest rec sleep cycles. 
-        [3] = 1 sleep cycle below sleepGoalRec. [4] = 2 sleep cycles below sleepGoalRec */
+        [1] = highest rec sleep cycles. [2] = 2nd highest rec sleep cycles. (ordered most to least)
+        [3] = 1 sleep cycle below sleepGoalRec. [4] = 2 sleep cycles below sleepGoalRec (ordered most to least) */
         
         //calculate goal sleep [0]
         int goalsleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
