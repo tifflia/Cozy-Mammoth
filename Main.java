@@ -76,6 +76,10 @@ public class Main extends JPanel{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
 
+        //*****
+        //look into the directory for the file
+        // check if the file has a date, if it does, compare with current date
+
         Main mainInstance = new Main();
         
         //add panels to the cardlayout
@@ -546,6 +550,11 @@ class Home extends JPanel{
         this.add(box);
 
         if(mainInstance.user != null) {
+            //*****
+            //create button that runs system.exit()
+            // when button is pressed create processfiles object
+            // get date, savepointtofile, then call system.exit()
+
             Box header = Box.createVerticalBox();
 
             JLabel title = new JLabel("Welcome, " + mainInstance.user.getName());
