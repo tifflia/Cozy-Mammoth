@@ -331,12 +331,6 @@ class Welcome extends JPanel implements MouseListener{
     public void mouseEntered(MouseEvent e){}
     public void mouseReleased(MouseEvent e){}
     public void mouseClicked(MouseEvent e){}
-
-    // public void paintComponent(Graphics g) {
-    //     super.paintComponent(g);
-
-    //     //would be nice to add the gradient + random stars (from the last hw) to the background of the welcome page
-    // }
 }
 
 //NewUser page
@@ -541,8 +535,8 @@ class NewUser extends JPanel{
                     mainInstance.Home = new Home(mainInstance); //have to "reset" the home page in mainInstance
                     mainInstance.add(mainInstance.Home,"3"); //update the old home in the cardlayout
 
-                    mainInstance.SleepRecs = new SleepRecommendation(mainInstance); //have to "reset" the sleepRecs page in mainInstance
-                    mainInstance.add(mainInstance.SleepRecs,"6"); //update the old sleepRecs in the cardlayout
+                    mainInstance.SleepRecs.update(); //update the user values in SleepRecs
+                    mainInstance.SleepRecs.drawPage(); //update the old sleepRecs in the cardlayout
                     
                     mainInstance.Settings = new Settings(mainInstance); //have to "reset" the settings page in mainInstance
                     mainInstance.add(mainInstance.Settings,"7"); //update the old settings in the cardlayout
@@ -1191,9 +1185,9 @@ class SleepRecommendation extends JPanel{
     private double age;
     private int sleepGoal;
     private SleepHistory sleepHistory;
-    private Time[] sleepRecs = new Time[5];    //contains 5 recommended times.
+    //hard-coded in so that it could run... change it back when SleepRec is fully implemented - tiffany
+    private Time[] sleepRecs = {new Time(1,0),new Time(2,0),new Time(3,0),new Time(4,0),new Time(5,0)}; /*new Time[5];*/    //contains 5 recommended times.
     private String[] sleepRecsMessages = new String[5];
-    private String sleepSummary;
     //to reference for graphics for the page within this class
     Main mainInstance;
 
@@ -1209,6 +1203,20 @@ class SleepRecommendation extends JPanel{
         }
 
         this.sleepHistory = mainInstance.SleepHistory;
+
+        drawPage();
+    }
+
+    public void update(){
+        this.wakeTime = mainInstance.user.getWakeTime();
+        this.bedTime = mainInstance.user.getBedTime();
+        this.age = mainInstance.user.getAge();
+        this.sleepGoal = mainInstance.user.getSleepGoal();
+        //probably have to run calculateSleepRecs/getSleepRecs
+    }
+
+    public void drawPage(){
+        this.removeAll(); //meant to refresh the Panel
 
         //-----------------Panel Components/Graphics-----------------
         Color bg = new Color(42, 54, 89);
@@ -1257,7 +1265,7 @@ class SleepRecommendation extends JPanel{
         subtitle1.setBorder(BorderFactory.createEmptyBorder(60,0,20,0));
 
         //best bedtime
-        JTextField rec1 = new JTextField("00:00 PM");
+        JTextField rec1 = new JTextField(sleepRecs[0].toString());
         rec1.setForeground(bg);
         rec1.setFont(new Font("Arial", Font.BOLD, 20));
         rec1.setEditable(false);
@@ -1279,8 +1287,8 @@ class SleepRecommendation extends JPanel{
         subtitle2.setBorder(BorderFactory.createEmptyBorder(50,0,20,0));
 
         //other suggestions
-        JTextField rec2 = new JTextField("00:00 PM");
-        JTextField rec3 = new JTextField("00:00 PM");
+        JTextField rec2 = new JTextField(sleepRecs[1].toString());
+        JTextField rec3 = new JTextField(sleepRecs[2].toString());
         rec2.setForeground(bg);
         rec2.setFont(new Font("Arial", Font.BOLD, 20));
         rec2.setEditable(false);
@@ -1312,8 +1320,8 @@ class SleepRecommendation extends JPanel{
         subtitle3.setBorder(BorderFactory.createEmptyBorder(50,0,20,0));
 
         //for less sleep
-        JTextField rec4 = new JTextField("00:00 PM");
-        JTextField rec5 = new JTextField("00:00 PM");
+        JTextField rec4 = new JTextField(sleepRecs[3].toString());
+        JTextField rec5 = new JTextField(sleepRecs[4].toString());
         rec4.setForeground(bg);
         rec4.setFont(new Font("Arial", Font.BOLD, 20));
         rec4.setEditable(false);
@@ -1348,8 +1356,8 @@ class SleepRecommendation extends JPanel{
 
     public Time[] calculateSleepRec(){
         /*returns array of 5 recommended times. [0] = sleepGoalRec (based on inputted goals)
-        [1] = highest rec sleep cycles. [2] = 2nd highest rec sleep cycles. (ordered most to least)
-        [3] = 1 sleep cycle below sleepGoalRec. [4] = 2 sleep cycles below sleepGoalRec (ordered most to least) */
+        [1] = highest rec sleep cycles. [2] = 2nd highest rec sleep cycles. 
+        [3] = 1 sleep cycle below sleepGoalRec. [4] = 2 sleep cycles below sleepGoalRec */
         
         //calculate goal sleep [0]
         int goalsleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
@@ -1364,8 +1372,6 @@ class SleepRecommendation extends JPanel{
         int numOfCycles = goalsleepRecHours;
         //commented out to make program compile - tiffany
         // ((bestsleepRecHours1 * 60) + bestsleepRecMins1) / 90;
-        //     changed to-->   int numOfCycles = ((goalsleepRecHours * 60) + goalsleepRecMins) / 90;
-
         sleepRecs[0] = new Time(goalsleepRecHours, goalsleepRecMins);   //contains sleep recommendation based on sleep goal
         sleepRecsMessages[0] = "According to your set goals ( " + numOfCycles + "cycles), you should sleep at: ";
 
@@ -1518,22 +1524,13 @@ class SleepRecommendation extends JPanel{
 
     public String sleepHistorySummary(SleepNode curr){
         //if average of durations of past week/7 days is < sleep goal hours,
-        double average = 3;   // get history
         if (4/2 != 3){
-            sleepSummary = "You haven't been meeting your sleep goal. Try to sleep more today!";
-            return sleepSummary;
-        }
-        else if (average > 0 && average < 4){
-            sleepSummary= "Good! You met your goal n times over the past 7 days";
-            return sleepSummary;
+            return "You haven't been meeting your sleep goal. Try to sleep more today!";
         }
         //else if average is sleep goal at least -- counter > 0 && counter < 4:
-        else if (average >= 4){
-            sleepSummary = "Great! You met your goal n times in the past 7 days.";
-            return sleepSummary;
-        //else if coutner >= 4, return "";
+        return "Good! You met your goal n times over the past 7 days";
+        //else if coutner >= 4, return "Great! You met your goal n times in the past 7 days.";
     }
-
 }
 
 class SleepHistory extends JPanel{
@@ -1661,6 +1658,7 @@ class SleepHistory extends JPanel{
                     historycl.show(infoPanel,"1");
                 }
                 else {
+                    //create new panel and show it
                     //create new panel and show it
                     JPanel panel = new JPanel(new GridLayout(2,3,10,10));
                     JLabel date = new JLabel(sleepHistory.get(1).getDate());
@@ -2170,8 +2168,8 @@ class Settings extends JPanel{
                     mainInstance.Home = new Home(mainInstance); //have to "reset" the home page in mainInstance
                     mainInstance.add(mainInstance.Home,"3"); //update the old home in the cardlayout
                     
-                    mainInstance.SleepRecs = new SleepRecommendation(mainInstance); //have to "reset" the sleepRecs page in mainInstance
-                    mainInstance.add(mainInstance.SleepRecs,"6"); //update the old sleepRecs in the cardlayout
+                    mainInstance.SleepRecs.update(); //update the user values in SleepRecs
+                    mainInstance.SleepRecs.drawPage(); //update the old sleepRecs in the cardlayout
                     
                     mainInstance.Settings = new Settings(mainInstance); //have to "reset" the settings page in mainInstance
                     mainInstance.add(mainInstance.Settings,"7"); //update the old settings in the cardlayout
