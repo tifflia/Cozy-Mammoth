@@ -28,7 +28,7 @@ public class Main extends JPanel{
     public static final int WIDTH = 500;
     public static final int HEIGHT = 750;
 
-    User user = new User("John",18,8,new Time(0,0),new Time(8,0));
+    User user /*= new User("John",18,8,new Time(22,0),new Time(8,0))*/;
 
     static JFrame frame = new JFrame("CozyMammoth");
 
@@ -39,7 +39,7 @@ public class Main extends JPanel{
     SleepHistory SleepHistory = new SleepHistory();
     LogSleep LogSleep = new LogSleep(this);
     JPanel SleepRecs = new JPanel();
-    JPanel Settings = new JPanel();
+    Settings Settings = new Settings(this);
     //CardLayout to manage JPanel "pages"
     CardLayout cl = new CardLayout();
 
@@ -79,7 +79,8 @@ public class Main extends JPanel{
         mainInstance.add(mainInstance.Welcome, "1");
         mainInstance.add(mainInstance.NewUser, "2");
         mainInstance.add(mainInstance.Home, "3");
-        mainInstance.add(mainInstance.LogSleep, "4");
+        mainInstance.add(mainInstance.LogSleep, "5");
+        mainInstance.add(mainInstance.Settings, "7");
         //continue adding panels
 
         frame.setContentPane(mainInstance); //showing Welcome because it's the first panel added
@@ -94,18 +95,23 @@ public class Main extends JPanel{
         System.out.println("bedtime goal: " + testUser.getBedTime());
         System.out.println("wake up goal: " + testUser.getWakeTime());
         SleepNode testMonday = new SleepNode(bedTime, wakeTime, "I woke up very refreshed.", 5);
-        SleepHistory testHistory = new SleepHistory(testMonday);
-        SleepHistory testhistory = new SleepHistory(testMonday);
+        //commented out to make program compile - tiffany
+        // SleepHistory testHistory = new SleepHistory(testMonday);
+        // SleepHistory testhistory = new SleepHistory(testMonday);
         Schedule testcalendar = new Schedule();
-        SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal(), testhistory, testcalendar);
+
+        //commented out to make program compile - tiffany
+        // SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal(), testhistory, testcalendar);
+
         //System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
-        testRec.calculateSleepRec();
-        System.out.println(testRec.getSleepRecsMessages(0) + testRec.getSleepRecs(0));
-        System.out.println(testRec.getSleepRecsMessages(1) + testRec.getSleepRecs(1));
-        System.out.println(testRec.getSleepRecsMessages(2) + testRec.getSleepRecs(2));
-        System.out.println(testRec.getSleepRecsMessages(3) + testRec.getSleepRecs(3));
-        System.out.println(testRec.getSleepRecsMessages(4) + testRec.getSleepRecs(4));
-        System.out.println(testRec.sleepHistorySummary(testMonday));
+
+        // testRec.calculateSleepRec();
+        // System.out.println(testRec.getSleepRecsMessages(0) + testRec.getSleepRecs(0));
+        // System.out.println(testRec.getSleepRecsMessages(1) + testRec.getSleepRecs(1));
+        // System.out.println(testRec.getSleepRecsMessages(2) + testRec.getSleepRecs(2));
+        // System.out.println(testRec.getSleepRecsMessages(3) + testRec.getSleepRecs(3));
+        // System.out.println(testRec.getSleepRecsMessages(4) + testRec.getSleepRecs(4));
+        // System.out.println(testRec.sleepHistorySummary(testMonday));
 
         //fix
         // System.out.println(testHistory.getAverageDuration());
@@ -229,6 +235,19 @@ class Time{
         return (h > 0 && h <= 12) && (m >= 0 && m < 60);
     }
 
+    //return only the hours as string (converted from military time)
+    public String hoursToString(){
+        if(hours == 0) return "" + 12;
+        if(hours <= 12)return "" + hours;
+        else return "" + (hours-12);
+    }
+
+    //return only the minutes as string (converted from military time)
+    public String minsToString(){
+        if(minutes < 10) return "0" + minutes;
+        else return "" + minutes;
+    }
+
     //will return as "00:00 PM/AM"
     public String toString() {
         String toReturn = "";
@@ -294,6 +313,7 @@ class Welcome extends JPanel implements MouseListener{
     }
 
     //MOUSELISTENER (navigation)
+    @Override
     public void mousePressed(MouseEvent e) {
         System.out.println("Mouse pressed detected on " + e.getComponent().getClass().getName() + ".");
 
@@ -306,10 +326,10 @@ class Welcome extends JPanel implements MouseListener{
             mainInstance.cl.show(mainInstance, "3");
         }
     }
-    public void mouseReleased(MouseEvent e) {}
-    public void mouseEntered(MouseEvent e) {}
-    public void mouseExited(MouseEvent e) {}
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseExited(MouseEvent e){}
+    public void mouseEntered(MouseEvent e){}
+    public void mouseReleased(MouseEvent e){}
+    public void mouseClicked(MouseEvent e){}
 
     // public void paintComponent(Graphics g) {
     //     super.paintComponent(g);
@@ -318,7 +338,7 @@ class Welcome extends JPanel implements MouseListener{
     // }
 }
 
-//NewUser page Jpanel
+//NewUser page
 class NewUser extends JPanel{
     Main mainInstance;
 
@@ -519,6 +539,8 @@ class NewUser extends JPanel{
                     //switch to home page
                     mainInstance.Home = new Home(mainInstance); //have to "reset" the home page in mainInstance
                     mainInstance.add(mainInstance.Home,"3"); //update the old home in the cardlayout
+                    mainInstance.Settings = new Settings(mainInstance); //have to "reset" the settings page in mainInstance
+                    mainInstance.add(mainInstance.Settings,"7"); //update the old settings in the cardlayout
                     mainInstance.cl.show(mainInstance, "3");
                 }
 			}
@@ -530,7 +552,7 @@ class NewUser extends JPanel{
     }
 }
 
-//Home page JPanel
+//Home page
 class Home extends JPanel{
     Main mainInstance;
 
@@ -631,7 +653,7 @@ class Home extends JPanel{
                 @Override
                 public void mousePressed(MouseEvent e) {
                     System.out.println("Log Sleep pressed -> LogSleep");
-                    mainInstance.cl.show(mainInstance, "4");
+                    mainInstance.cl.show(mainInstance, "5");
                 }
             });
             options[2].addMouseListener(new MouseAdapter() {
@@ -640,13 +662,16 @@ class Home extends JPanel{
             });
             options[3].addMouseListener(new MouseAdapter() {
                 @Override
-                public void mousePressed(MouseEvent e) {System.out.println("Settings pressed");}
+                public void mousePressed(MouseEvent e) {
+                    System.out.println("Settings pressed -> Settings");
+                    mainInstance.cl.show(mainInstance, "7");
+                }
             });
         }
     }
 }
 
-//LogSleep page Jpanel
+//LogSleep page
 class LogSleep extends JPanel{
     private Time sleepTime;
     private Time wakeTime;
@@ -982,6 +1007,8 @@ class LogSleep extends JPanel{
                     //go back to Home
                     mainInstance.cl.show(mainInstance, "3");
                     mainInstance.LogSleep.logcl.show(mainInstance.LogSleep,"1");
+
+                    //print out what sleephistory looks like?
                 }
             }
 		});
@@ -1172,7 +1199,8 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
             goalsleepRecHours = 24 + goalsleepRecHours;
         }
         int numOfCycles = goalsleepRecHours;
-        ((bestsleepRecHours1 * 60) + bestsleepRecMins1) / 90;
+        //commented out to make program compile - tiffany
+        // ((bestsleepRecHours1 * 60) + bestsleepRecMins1) / 90;
         sleepRecs[0] = new Time(goalsleepRecHours, goalsleepRecMins);   //contains sleep recommendation based on sleep goal
         sleepRecsMessages[0] = "According to your set goals ( " + numOfCycles + "cycles), you should sleep at: ";
 
@@ -1345,17 +1373,13 @@ class SleepHistory extends JPanel /*implements MouseListener*/{
 
 
     public SleepHistory(){
-        // make it add the day (figure out how to keep day of week in SleepNode)
+
     }
 
     //add data to sleep history
     public void addDay(SleepNode day){
         sleepHistory.add(day);
     }
-
-    // public void addNote(SleepJournal note){
-    //     sleepNotes.add(note);
-    // }
   
     //calculate average sleep time
     public void calculateAverageDuration(){
@@ -1425,6 +1449,258 @@ class SleepNode{
         return duration;
     }
 }
+
+//Settings page
+class Settings extends JPanel{
+    Main mainInstance;
+
+    public Settings(Main main) {
+        mainInstance = main;
+
+        Color bg = new Color(37,44,64);
+        this.setBackground(bg);
+        this.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+
+        Box mainBox = Box.createVerticalBox();
+        this.add(mainBox);
+
+        //exit arrow
+        ImageIcon backIcon = new ImageIcon("graphics/angle-left.png");
+        JLabel backLabel = new JLabel();
+        backLabel.setIcon(backIcon);
+
+        Box backBox = Box.createVerticalBox();
+        backBox.add(backLabel);
+        mainBox.add(backBox);
+
+        backLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        backLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,440));
+
+        backBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backBox.add(Box.createHorizontalGlue());
+
+        //title label
+        JLabel title = new JLabel("Edit User Settings");
+        mainBox.add(title);
+        //title styling
+        title.setForeground(Color.WHITE);
+        title.setFont(new Font("Arial", Font.PLAIN, 25));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+        title.setBorder(BorderFactory.createEmptyBorder(25,0,25,0));
+
+        Box subBox = Box.createVerticalBox();
+        mainBox.add(subBox);
+        subBox.setBorder(BorderFactory.createEmptyBorder(0,50,50,50));
+
+        //initializing components
+        JLabel[] labels = new JLabel[5];
+        JTextField[] texts = new JTextField[7];
+        Box text4 = Box.createHorizontalBox();
+        Box text4wrap = Box.createVerticalBox();
+        Box text5 = Box.createHorizontalBox();
+        Box text5wrap = Box.createVerticalBox();
+        JButton button = new JButton("Done");
+
+        //initializing labels 
+        labels[0] = new JLabel("Name");
+        labels[1] = new JLabel("Age");
+        labels[2] = new JLabel("Sleep Goal");
+        labels[3] = new JLabel("Bedtime");
+        labels[4] = new JLabel("Wake Up");
+
+        //initializing textfields
+        Color textbg = new Color(104, 121, 170);
+        for(int i = 0; i < texts.length; i++) {
+            if(i < 3) {
+                texts[i] = new JTextField(20);
+            }
+            else{
+                texts[i] = new JTextField(1);
+            }
+
+            //textfield styling
+            texts[i].setBackground(textbg);
+            texts[i].setForeground(Color.WHITE);
+            texts[i].setFont(new Font("Arial", Font.PLAIN, 15));
+            texts[i].setCaretColor(Color.WHITE);
+        }
+
+        //adding to box that wraps the first 3 labels + textfields to the mainbox
+        for(int i = 0; i < 3; i++) {
+            Box wrap = Box.createVerticalBox();
+            wrap.add(labels[i]);
+            wrap.add(texts[i]);
+            subBox.add(wrap);
+
+            //textfield styling
+            texts[i].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+            texts[i].setAlignmentX(Component.LEFT_ALIGNMENT);
+            wrap.setAlignmentX(Component.CENTER_ALIGNMENT);
+        }
+
+        //label styling
+        for(int i = 0; i < labels.length; i++) {
+            labels[i].setFont(new Font("Arial", Font.PLAIN, 15));
+            labels[i].setForeground(Color.WHITE);
+            labels[i].setBorder(BorderFactory.createEmptyBorder(25,0,5,0));
+            labels[i].setAlignmentX(Component.LEFT_ALIGNMENT);
+        }
+
+        String[] meridiems = {"AM", "PM"};
+        JComboBox<String> bedtimeCB = new JComboBox<>(meridiems);
+        JComboBox<String> wakeupCB = new JComboBox<>(meridiems);
+
+        bedtimeCB.setBorder(BorderFactory.createEmptyBorder(0,10,0,0));
+        wakeupCB.setBorder(BorderFactory.createEmptyBorder(0,10,0,0));
+
+        JLabel divider1 = new JLabel(":");
+        JLabel divider2 = new JLabel(":");
+        divider1.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
+        divider1.setFont(new Font("Arial", Font.PLAIN, 15));
+        divider1.setForeground(Color.WHITE);
+        divider2.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
+        divider2.setFont(new Font("Arial", Font.PLAIN, 15));
+        divider2.setForeground(Color.WHITE);
+        
+        // bedtime (text + label + text + combobox)
+        text4.add(texts[3]);
+        text4.add(divider1);
+        text4.add(texts[4]);
+        text4.add(bedtimeCB);
+        //bedtime styling
+        texts[3].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        texts[4].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        text4.setAlignmentY(Component.CENTER_ALIGNMENT);
+        //text4 (horizontal) --> text4wrap (vertical)
+        text4wrap.add(text4);
+        text4wrap.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // wakeup (text + label + text + combobox)
+        text5.add(texts[5]);
+        text5.add(divider2);
+        text5.add(texts[6]);
+        text5.add(wakeupCB);
+        //wakeup styling
+        texts[5].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        texts[6].setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        text5.setAlignmentY(Component.CENTER_ALIGNMENT);
+        //text5 (horizontal) --> text5wrap (vertical)
+        text5wrap.add(text5);
+        text5wrap.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        //bedtime box (label + bedtime box)
+        Box wrap4 = Box.createVerticalBox();
+        wrap4.add(labels[3]);
+        wrap4.add(text4wrap);
+        subBox.add(wrap4);
+        wrap4.setAlignmentX(Component.CENTER_ALIGNMENT);
+        //wakeup box (label + wakeup box)
+        Box wrap5 = Box.createVerticalBox();
+        wrap5.add(labels[4]);
+        wrap5.add(text5wrap);
+        subBox.add(wrap5);
+        wrap5.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        //set the values of the textfields to the user data
+        if(mainInstance.user != null) {
+            texts[0].setText(mainInstance.user.getName());
+            texts[1].setText(""+mainInstance.user.getAge());
+            texts[2].setText(""+mainInstance.user.getSleepGoal());
+            texts[3].setText(mainInstance.user.getBedTime().hoursToString());
+            texts[4].setText(mainInstance.user.getBedTime().minsToString());
+            texts[5].setText(mainInstance.user.getWakeTime().hoursToString());
+            texts[6].setText(mainInstance.user.getWakeTime().minsToString());
+            bedtimeCB.setSelectedItem(mainInstance.user.getBedTime().meridiem);
+            wakeupCB.setSelectedItem(mainInstance.user.getWakeTime().meridiem);
+        }
+
+        //BUTTON
+        //adding box that wraps the done button to the main box
+        Box buttonWrap = Box.createVerticalBox();
+        buttonWrap.add(button);
+        subBox.add(buttonWrap);
+
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonWrap.setBorder(BorderFactory.createEmptyBorder(50,0,0,0));
+
+        button.setMargin(new Insets(5,25,5,25));
+        Color buttColor = new Color(80, 121, 242);
+        button.setBackground(buttColor);
+        button.setOpaque(true);
+        button.setBorderPainted(false);
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.PLAIN, 15));
+
+        //MOUSELISTENER (for button)
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+			public void mousePressed(MouseEvent e) {
+                Color clickedButtColor = new Color(51, 77, 156);
+                button.setBackground(clickedButtColor);
+				System.out.println("button has been pressed");
+
+                //check name
+                String name = texts[0].getText();
+                boolean validName = (name != null);
+                //check age
+                double age = Double.parseDouble(texts[1].getText());
+                boolean validAge = (age > 0);
+                //check sleepGoal
+                int sleepGoal = Integer.parseInt(texts[2].getText());
+                boolean validSleepGoal = (sleepGoal > 0);
+                //check bedtime
+                int bedHours = Integer.parseInt(texts[3].getText());
+                int bedMins = Integer.parseInt(texts[4].getText());
+                boolean validBed = Time.checkTime(bedHours, bedMins);
+                String bedMeridiem = bedtimeCB.getSelectedItem().toString();
+                System.out.println(validBed);
+                //check wakeup
+                int wakeHours = Integer.parseInt(texts[5].getText());
+                int wakeMins = Integer.parseInt(texts[6].getText());
+                boolean validWake = Time.checkTime(wakeHours, wakeMins);
+                String wakeMeridiem = wakeupCB.getSelectedItem().toString();
+                System.out.println(validWake);
+
+                //initialize the new user to the mainInstance
+                if(validName && validAge && validSleepGoal && validBed && validWake) {
+                    //User(String userName, double userAge, int sleep, Time bed, Time wake)
+                    Time bed = new Time(Time.convertHours(bedHours, bedMeridiem), bedMins);
+                    Time wake = new Time(Time.convertHours(wakeHours, wakeMeridiem), wakeMins);
+
+                    System.out.println(bed);
+                    System.out.println(wake);
+
+                    mainInstance.user = new User(name, age, sleepGoal, bed, wake);
+
+                    //switch to home page
+                    mainInstance.Home = new Home(mainInstance); //have to "reset" the home page in mainInstance
+                    mainInstance.add(mainInstance.Home,"3"); //update the old home in the cardlayout
+                    mainInstance.Settings = new Settings(mainInstance); //have to "reset" the settings page in mainInstance
+                    mainInstance.add(mainInstance.Settings,"7"); //update the old settings in the cardlayout
+                    mainInstance.cl.show(mainInstance, "3");
+                }
+			}
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                button.setBackground(buttColor);
+            }
+		});
+
+        //backLabel
+        backLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                mainInstance.Settings = new Settings(mainInstance); //have to "reset" the settings page in mainInstance
+                mainInstance.add(mainInstance.Settings,"7"); //update the old settings in the cardlayout
+                //go back to home
+                mainInstance.cl.show(mainInstance,"3");
+            }
+        });
+    }
+}
+
+
+//unimplemented classes...
 class Schedule extends JPanel /*implements MouseListener*/{
     ArrayList<Event> calendar;
 
