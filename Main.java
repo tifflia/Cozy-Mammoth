@@ -30,7 +30,7 @@ public class Main extends JPanel{
     Welcome Welcome = new Welcome(this);
     NewUser NewUser = new NewUser(this);
     Home Home = new Home(this);
-    JPanel SleepHistory = new JPanel();
+    SleepHistory SleepHistory = new SleepHistory();
     LogSleep LogSleep = new LogSleep(this);
     JPanel SleepRecs = new JPanel();
     JPanel Settings = new JPanel();
@@ -957,7 +957,8 @@ class LogSleep extends JPanel{
                     sleepNote = notesText.getText();
 
                     //create the sleepNode (call LogSleep's method) and add it to the SleepHistory arrayList(?)
-                    //
+                    SleepNode toAdd = createSleepNode();
+                    mainInstance.SleepHistory.sleepHistory.add(toAdd); //get's the sleepHistory ArrayList from the SleepHistory instance in 
 
                     //when done, reset all the textfields/textareas/rating, and clear the LogSleep data (make null)
                     for(int i = 0; i < 4; i++) {
@@ -1328,15 +1329,13 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
 class SleepHistory extends JPanel /*implements MouseListener*/{
     //contains history of sleep from past week
     private int averageSleepDuration;
-    ArrayList<SleepNode> sleepHistory;
+    ArrayList<SleepNode> sleepHistory = new ArrayList<SleepNode>();
 
     //ArrayList<SleepJournal> sleepNotes = new ArrayList<>();   // sleep journal stuff will be part of log sleep, which will input into sleep history
 
 
-    public SleepHistory(SleepNode day){
+    public SleepHistory(){
         // make it add the day (figure out how to keep day of week in SleepNode)
-        sleepHistory = new ArrayList<SleepNode>();
-        //sleepNotes.add(note);
     }
 
     //add data to sleep history
