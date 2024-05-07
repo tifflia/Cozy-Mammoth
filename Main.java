@@ -36,7 +36,7 @@ public class Main extends JPanel{
     Welcome Welcome = new Welcome(this);
     NewUser NewUser = new NewUser(this);
     Home Home = new Home(this);
-    SleepHistory SleepHistory = new SleepHistory(this);
+    SleepHistory SleepHistory = new SleepHistory();
     LogSleep LogSleep = new LogSleep(this);
     SleepRecommendation SleepRecs = new SleepRecommendation(this);
     Settings Settings = new Settings(this);
@@ -80,7 +80,6 @@ public class Main extends JPanel{
         mainInstance.add(mainInstance.Welcome, "1");
         mainInstance.add(mainInstance.NewUser, "2");
         mainInstance.add(mainInstance.Home, "3");
-        mainInstance.add(mainInstance.SleepHistory, "4");
         mainInstance.add(mainInstance.LogSleep, "5");
         mainInstance.add(mainInstance.SleepRecs, "6");
         mainInstance.add(mainInstance.Settings, "7");
@@ -96,10 +95,11 @@ public class Main extends JPanel{
         User testUser = new User("John Doe", 20, 8, bedTime, wakeTime);
         System.out.println("bedtime goal: " + testUser.getBedTime());
         System.out.println("wake up goal: " + testUser.getWakeTime());
+        SleepNode testMonday = new SleepNode(bedTime, wakeTime, "I woke up very refreshed.", 5);
         //commented out to make program compile - tiffany
-        // SleepNode testMonday = new SleepNode(bedTime, wakeTime, "I woke up very refreshed.", 5);
         // SleepHistory testHistory = new SleepHistory(testMonday);
         // SleepHistory testhistory = new SleepHistory(testMonday);
+        Schedule testcalendar = new Schedule();
 
         //commented out to make program compile - tiffany
         // SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal(), testhistory, testcalendar);
@@ -116,8 +116,8 @@ public class Main extends JPanel{
 
         //fix
         // System.out.println(testHistory.getAverageDuration());
-        SleepNode test = new SleepNode(new Time(0,0),new Time(6,0),"My sleep was ok.",3);
-        mainInstance.SleepHistory.addDay(test);
+
+
     }
 
     // public void paintComponent(Graphics g) {.
@@ -331,6 +331,12 @@ class Welcome extends JPanel implements MouseListener{
     public void mouseEntered(MouseEvent e){}
     public void mouseReleased(MouseEvent e){}
     public void mouseClicked(MouseEvent e){}
+
+    // public void paintComponent(Graphics g) {
+    //     super.paintComponent(g);
+
+    //     //would be nice to add the gradient + random stars (from the last hw) to the background of the welcome page
+    // }
 }
 
 //NewUser page
@@ -535,8 +541,8 @@ class NewUser extends JPanel{
                     mainInstance.Home = new Home(mainInstance); //have to "reset" the home page in mainInstance
                     mainInstance.add(mainInstance.Home,"3"); //update the old home in the cardlayout
 
-                    mainInstance.SleepRecs.update(); //update the user values in SleepRecs
-                    mainInstance.SleepRecs.drawPage(); //update the old sleepRecs in the cardlayout
+                    mainInstance.SleepRecs = new SleepRecommendation(mainInstance); //have to "reset" the sleepRecs page in mainInstance
+                    mainInstance.add(mainInstance.SleepRecs,"6"); //update the old sleepRecs in the cardlayout
                     
                     mainInstance.Settings = new Settings(mainInstance); //have to "reset" the settings page in mainInstance
                     mainInstance.add(mainInstance.Settings,"7"); //update the old settings in the cardlayout
@@ -580,7 +586,7 @@ class Home extends JPanel{
 
             //JFrame date
             Date j = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
             String formattedDate = dateFormat.format(j);
             JLabel date = new JLabel();
             date.setText(formattedDate);
@@ -660,7 +666,7 @@ class Home extends JPanel{
             options[0].addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    System.out.println("Sleep Recommendations pressed -> SleepRecs");
+                    System.out.println("Sleep Recommendations pressed");
                     mainInstance.cl.show(mainInstance, "6");
                 }
             });
@@ -673,10 +679,7 @@ class Home extends JPanel{
             });
             options[2].addMouseListener(new MouseAdapter() {
                 @Override
-                public void mousePressed(MouseEvent e) {
-                    System.out.println("Sleep History pressed -> SleepHistory");
-                    mainInstance.cl.show(mainInstance, "4");
-                }
+                public void mousePressed(MouseEvent e) {System.out.println("Sleep History pressed");}
             });
             options[3].addMouseListener(new MouseAdapter() {
                 @Override
@@ -815,7 +818,7 @@ class LogSleep extends JPanel{
         mainBox1.add(wakeBoxWrap);
 
         //BUTTON
-        //adding box that wraps the continue button to the main box
+        //adding box that wraps the done button to the main box
         JButton button1 = new JButton("Continue");
         Box buttonWrap1 = Box.createVerticalBox();
         buttonWrap1.add(button1);
@@ -1011,7 +1014,7 @@ class LogSleep extends JPanel{
 
                     //create the sleepNode (call LogSleep's method) and add it to the SleepHistory arrayList(?)
                     SleepNode toAdd = createSleepNode();
-                    mainInstance.SleepHistory.addDay(toAdd); //get's the sleepHistory ArrayList from the SleepHistory instance in 
+                    mainInstance.SleepHistory.sleepHistory.add(toAdd); //get's the sleepHistory ArrayList from the SleepHistory instance in 
 
                     //when done, reset all the textfields/textareas/rating, and clear the LogSleep data (make null)
                     for(int i = 0; i < 4; i++) {
@@ -1022,12 +1025,11 @@ class LogSleep extends JPanel{
                         faces[i].setIcon(faceIcons[i]);
                     }
                     mainInstance.LogSleep.clearLog();
-
                     //go back to Home
-                    mainInstance.SleepHistory.drawPage(); //update the sleepHistory page
-                    
                     mainInstance.cl.show(mainInstance, "3");
                     mainInstance.LogSleep.logcl.show(mainInstance.LogSleep,"1");
+
+                    //print out what sleephistory looks like?
                 }
             }
 		});
@@ -1185,9 +1187,9 @@ class SleepRecommendation extends JPanel{
     private double age;
     private int sleepGoal;
     private SleepHistory sleepHistory;
-    //hard-coded in so that it could run... change it back when SleepRec is fully implemented - tiffany
-    private Time[] sleepRecs = {new Time(1,0),new Time(2,0),new Time(3,0),new Time(4,0),new Time(5,0)}; /*new Time[5];*/    //contains 5 recommended times.
+    private Time[] sleepRecs = new Time[5];    //contains 5 recommended times.
     private String[] sleepRecsMessages = new String[5];
+    private String sleepSummary;
     //to reference for graphics for the page within this class
     Main mainInstance;
 
@@ -1203,20 +1205,6 @@ class SleepRecommendation extends JPanel{
         }
 
         this.sleepHistory = mainInstance.SleepHistory;
-
-        drawPage();
-    }
-
-    public void update(){
-        this.wakeTime = mainInstance.user.getWakeTime();
-        this.bedTime = mainInstance.user.getBedTime();
-        this.age = mainInstance.user.getAge();
-        this.sleepGoal = mainInstance.user.getSleepGoal();
-        //probably have to run calculateSleepRecs/getSleepRecs
-    }
-
-    public void drawPage(){
-        this.removeAll(); //meant to refresh the Panel
 
         //-----------------Panel Components/Graphics-----------------
         Color bg = new Color(42, 54, 89);
@@ -1265,7 +1253,7 @@ class SleepRecommendation extends JPanel{
         subtitle1.setBorder(BorderFactory.createEmptyBorder(60,0,20,0));
 
         //best bedtime
-        JTextField rec1 = new JTextField(sleepRecs[0].toString());
+        JTextField rec1 = new JTextField("00:00 PM");
         rec1.setForeground(bg);
         rec1.setFont(new Font("Arial", Font.BOLD, 20));
         rec1.setEditable(false);
@@ -1287,8 +1275,8 @@ class SleepRecommendation extends JPanel{
         subtitle2.setBorder(BorderFactory.createEmptyBorder(50,0,20,0));
 
         //other suggestions
-        JTextField rec2 = new JTextField(sleepRecs[1].toString());
-        JTextField rec3 = new JTextField(sleepRecs[2].toString());
+        JTextField rec2 = new JTextField("00:00 PM");
+        JTextField rec3 = new JTextField("00:00 PM");
         rec2.setForeground(bg);
         rec2.setFont(new Font("Arial", Font.BOLD, 20));
         rec2.setEditable(false);
@@ -1320,8 +1308,8 @@ class SleepRecommendation extends JPanel{
         subtitle3.setBorder(BorderFactory.createEmptyBorder(50,0,20,0));
 
         //for less sleep
-        JTextField rec4 = new JTextField(sleepRecs[3].toString());
-        JTextField rec5 = new JTextField(sleepRecs[4].toString());
+        JTextField rec4 = new JTextField("00:00 PM");
+        JTextField rec5 = new JTextField("00:00 PM");
         rec4.setForeground(bg);
         rec4.setFont(new Font("Arial", Font.BOLD, 20));
         rec4.setEditable(false);
@@ -1356,8 +1344,8 @@ class SleepRecommendation extends JPanel{
 
     public Time[] calculateSleepRec(){
         /*returns array of 5 recommended times. [0] = sleepGoalRec (based on inputted goals)
-        [1] = highest rec sleep cycles. [2] = 2nd highest rec sleep cycles. 
-        [3] = 1 sleep cycle below sleepGoalRec. [4] = 2 sleep cycles below sleepGoalRec */
+        [1] = highest rec sleep cycles. [2] = 2nd highest rec sleep cycles. (ordered most to least)
+        [3] = 1 sleep cycle below sleepGoalRec. [4] = 2 sleep cycles below sleepGoalRec (ordered most to least) */
         
         //calculate goal sleep [0]
         int goalsleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
@@ -1372,6 +1360,8 @@ class SleepRecommendation extends JPanel{
         int numOfCycles = goalsleepRecHours;
         //commented out to make program compile - tiffany
         // ((bestsleepRecHours1 * 60) + bestsleepRecMins1) / 90;
+        //     changed to-->   int numOfCycles = ((goalsleepRecHours * 60) + goalsleepRecMins) / 90;
+
         sleepRecs[0] = new Time(goalsleepRecHours, goalsleepRecMins);   //contains sleep recommendation based on sleep goal
         sleepRecsMessages[0] = "According to your set goals ( " + numOfCycles + "cycles), you should sleep at: ";
 
@@ -1524,330 +1514,39 @@ class SleepRecommendation extends JPanel{
 
     public String sleepHistorySummary(SleepNode curr){
         //if average of durations of past week/7 days is < sleep goal hours,
+        double average = 3;   // get history
         if (4/2 != 3){
-            return "You haven't been meeting your sleep goal. Try to sleep more today!";
+            sleepSummary = "You haven't been meeting your sleep goal. Try to sleep more today!";
+            return sleepSummary;
+        }
+        else if (average > 0 && average < 4){
+            sleepSummary= "Good! You met your goal n times over the past 7 days";
+            return sleepSummary;
         }
         //else if average is sleep goal at least -- counter > 0 && counter < 4:
-        return "Good! You met your goal n times over the past 7 days";
-        //else if coutner >= 4, return "Great! You met your goal n times in the past 7 days.";
+        else if (average >= 4){
+            sleepSummary = "Great! You met your goal n times in the past 7 days.";
+            return sleepSummary;
+        //else if coutner >= 4, return "";
     }
+
 }
 
-class SleepHistory extends JPanel{
+class SleepHistory extends JPanel /*implements MouseListener*/{
     //contains history of sleep from past week
     private int averageSleepDuration;
     ArrayList<SleepNode> sleepHistory = new ArrayList<SleepNode>();
 
-    Main mainInstance;
+    //ArrayList<SleepJournal> sleepNotes = new ArrayList<>();   // sleep journal stuff will be part of log sleep, which will input into sleep history
 
-    public SleepHistory(Main main){
-        mainInstance = main;
 
-        //make sure sleepHistory starts off with 7 null items
-        for(int i = 0; i < 7; i++) {
-            sleepHistory.add(null);
-        }
+    public SleepHistory(){
 
-        drawPage();
     }
 
-    public void drawPage() {
-        this.removeAll(); //meant to refresh the Panel
-
-        Color bg = new Color(42, 54, 89);
-        Color bg2 = new Color(54,75,140);
-        Color textbg = new Color(211, 221, 252);
-        this.setBackground(bg);
-        this.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
-
-        Box mainBox = Box.createVerticalBox();
-        this.add(mainBox);
-
-        //exit arrow
-        ImageIcon backIcon = new ImageIcon("graphics/angle-left.png");
-        JLabel backLabel = new JLabel();
-        backLabel.setIcon(backIcon);
-
-        Box backBox = Box.createVerticalBox();
-        backBox.add(backLabel);
-        mainBox.add(backBox);
-
-        backLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        backLabel.setBorder(BorderFactory.createEmptyBorder(0,0,20,440));
-
-        backBox.setAlignmentX(Component.CENTER_ALIGNMENT);
-        backBox.add(Box.createHorizontalGlue());
-
-        ImageIcon icon = new ImageIcon("graphics/clouds-moon.png");
-        JLabel iconLabel = new JLabel("Sleep History");
-        iconLabel.setIcon(icon);
-        iconLabel.setBorder(BorderFactory.createEmptyBorder(40,0,40,0));
-        iconLabel.setIconTextGap(20);
-        iconLabel.setForeground(bg);
-        iconLabel.setFont(new Font("Arial", Font.PLAIN, 25));
-
-        //infoPanel will display info form the corresponding DayNodes in SleepHistory
-        JPanel infoPanel = new JPanel();
-        CardLayout historycl = new CardLayout();
-        infoPanel.setLayout(historycl);
-
-        JPanel titlePanel = new JPanel();
-        titlePanel.add(iconLabel);
-        titlePanel.setBackground(textbg);
-        infoPanel.add(titlePanel, "0");
-
-        JPanel noDayPanel = new JPanel(new GridBagLayout());
-        noDayPanel.setBackground(textbg);
-        JLabel msg = new JLabel("No data for this day.");
-        msg.setForeground(bg);
-        msg.setFont(new Font("Arial", Font.PLAIN, 15));
-        noDayPanel.add(msg);
-        infoPanel.add(noDayPanel, "1");
-
-        mainBox.add(infoPanel); //panel containing all the cardlayouts
-
-        JProgressBar[] bars = new JProgressBar[7];
-        Box[] wraps = new Box[7];
-        JLabel[] texts = new JLabel[7];
-
-        if(mainInstance.user != null) {
-            //showing how many hours they got in proportion to their sleepGoal
-            int max = mainInstance.user.getSleepGoal();
-            for(int i = 0; i < 7; i++) {
-                bars[i] = new JProgressBar(SwingConstants.HORIZONTAL,0,max);
-                texts[i] = new JLabel("N/A"); //date default
-                wraps[i] = Box.createVerticalBox();
-
-                //if this day in sleepHistory isn't null, draw it
-                if(sleepHistory.get(i) != null) {
-                    bars[i].setValue(sleepHistory.get(i).getDuration()); //progress bar
-                    texts[i].setText(sleepHistory.get(i).getDate()); //date
-                }
-                else {
-                    bars[i].setValue(0); //progress bar default
-                }
-                //combining text + bar into a box wrapper
-                wraps[i].add(texts[i]);
-                wraps[i].add(bars[i]);
-                mainBox.add(wraps[i]);
-
-                //text styling
-                texts[i].setForeground(Color.WHITE);
-                texts[i].setFont(new Font("Arial", Font.PLAIN, 15));
-                texts[i].setBorder(BorderFactory.createEmptyBorder(20,0,0,0));
-                texts[i].setAlignmentX(Component.LEFT_ALIGNMENT);
-            }
-        }
-
-        //EXPAND DAYNODES
-        wraps[0].addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if(sleepHistory.get(0) == null) {
-                    historycl.show(infoPanel,"1");
-                }
-                else {
-                    //create new panel and show it
-                }
-            }
-        });
-        wraps[1].addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if(sleepHistory.get(1) == null) {
-                    historycl.show(infoPanel,"1");
-                }
-                else {
-                    //create new panel and show it
-                    //create new panel and show it
-                    JPanel panel = new JPanel(new GridLayout(2,3,10,10));
-                    JLabel date = new JLabel(sleepHistory.get(1).getDate());
-                    JLabel bedtime = new JLabel("Sleep Time: " + sleepHistory.get(1).getBedTime());
-                    JLabel waketime = new JLabel("Wake Time: " + sleepHistory.get(1).getWakeTime());
-                    JLabel sleepQuality = new JLabel("Sleep Quality: " + sleepHistory.get(1).getSleepQuality() + "/5");
-                    JLabel sleepNotes = new JLabel("Notes: " + sleepHistory.get(1).getSleepNote());
-
-                    panel.setBackground(textbg);
-                    panel.add(date);
-                    panel.add(bedtime);
-                    panel.add(waketime);
-                    panel.add(new JLabel());
-                    panel.add(sleepQuality);
-                    panel.add(sleepNotes);
-
-
-                    infoPanel.add(panel, "2");
-                    historycl.show(infoPanel,"2");
-                }
-            }
-        });
-        wraps[2].addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if(sleepHistory.get(2) == null) {
-                    historycl.show(infoPanel,"1");
-                }
-                else {
-                    //create new panel and show it
-                    JPanel panel = new JPanel(new GridLayout(2,3,10,10));
-                    JLabel date = new JLabel(sleepHistory.get(2).getDate());
-                    JLabel bedtime = new JLabel("Sleep Time: " + sleepHistory.get(2).getBedTime());
-                    JLabel waketime = new JLabel("Wake Time: " + sleepHistory.get(2).getWakeTime());
-                    JLabel sleepQuality = new JLabel("Sleep Quality: " + sleepHistory.get(2).getSleepQuality() + "/5");
-                    JLabel sleepNotes = new JLabel("Notes: " + sleepHistory.get(2).getSleepNote());
-
-                    panel.setBackground(textbg);
-                    panel.add(date);
-                    panel.add(bedtime);
-                    panel.add(waketime);
-                    panel.add(new JLabel());
-                    panel.add(sleepQuality);
-                    panel.add(sleepNotes);
-
-
-                    infoPanel.add(panel, "2");
-                    historycl.show(infoPanel,"2");
-                }
-            }
-        });
-        wraps[3].addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if(sleepHistory.get(3) == null) {
-                    historycl.show(infoPanel,"1");
-                }
-                else {
-                    //create new panel and show it
-                    JPanel panel = new JPanel(new GridLayout(2,3,10,10));
-                    JLabel date = new JLabel(sleepHistory.get(3).getDate());
-                    JLabel bedtime = new JLabel("Sleep Time: " + sleepHistory.get(3).getBedTime());
-                    JLabel waketime = new JLabel("Wake Time: " + sleepHistory.get(3).getWakeTime());
-                    JLabel sleepQuality = new JLabel("Sleep Quality: " + sleepHistory.get(3).getSleepQuality() + "/5");
-                    JLabel sleepNotes = new JLabel("Notes: " + sleepHistory.get(3).getSleepNote());
-
-                    panel.setBackground(textbg);
-                    panel.add(date);
-                    panel.add(bedtime);
-                    panel.add(waketime);
-                    panel.add(new JLabel());
-                    panel.add(sleepQuality);
-                    panel.add(sleepNotes);
-
-
-                    infoPanel.add(panel, "2");
-                    historycl.show(infoPanel,"2");
-                }
-            }
-        });
-        wraps[4].addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if(sleepHistory.get(4) == null) {
-                    historycl.show(infoPanel,"1");
-                }
-                else {
-                    //create new panel and show it
-                    JPanel panel = new JPanel(new GridLayout(2,3,10,10));
-                    JLabel date = new JLabel(sleepHistory.get(4).getDate());
-                    JLabel bedtime = new JLabel("Sleep Time: " + sleepHistory.get(4).getBedTime());
-                    JLabel waketime = new JLabel("Wake Time: " + sleepHistory.get(4).getWakeTime());
-                    JLabel sleepQuality = new JLabel("Sleep Quality: " + sleepHistory.get(4).getSleepQuality() + "/5");
-                    JLabel sleepNotes = new JLabel("Notes: " + sleepHistory.get(4).getSleepNote());
-
-                    panel.setBackground(textbg);
-                    panel.add(date);
-                    panel.add(bedtime);
-                    panel.add(waketime);
-                    panel.add(new JLabel());
-                    panel.add(sleepQuality);
-                    panel.add(sleepNotes);
-
-
-                    infoPanel.add(panel, "2");
-                    historycl.show(infoPanel,"2");
-                }
-            }
-        });
-        wraps[5].addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if(sleepHistory.get(5) == null) {
-                    historycl.show(infoPanel,"1");
-                }
-                else {
-                    //create new panel and show it
-                    //create new panel and show it
-                    JPanel panel = new JPanel(new GridLayout(2,3,10,10));
-                    JLabel date = new JLabel(sleepHistory.get(5).getDate());
-                    JLabel bedtime = new JLabel("Sleep Time: " + sleepHistory.get(5).getBedTime());
-                    JLabel waketime = new JLabel("Wake Time: " + sleepHistory.get(5).getWakeTime());
-                    JLabel sleepQuality = new JLabel("Sleep Quality: " + sleepHistory.get(5).getSleepQuality() + "/5");
-                    JLabel sleepNotes = new JLabel("Notes: " + sleepHistory.get(5).getSleepNote());
-
-                    panel.setBackground(textbg);
-                    panel.add(date);
-                    panel.add(bedtime);
-                    panel.add(waketime);
-                    panel.add(new JLabel());
-                    panel.add(sleepQuality);
-                    panel.add(sleepNotes);
-
-
-                    infoPanel.add(panel, "2");
-                    historycl.show(infoPanel,"2");
-                }
-            }
-        });
-        wraps[6].addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if(sleepHistory.get(6) == null) {
-                    historycl.show(infoPanel,"1");
-                }
-                else {
-                    //create new panel and show it
-                    JPanel panel = new JPanel(new GridLayout(2,3,10,10));
-                    JLabel date = new JLabel(sleepHistory.get(6).getDate());
-                    JLabel bedtime = new JLabel("Sleep Time: " + sleepHistory.get(6).getBedTime());
-                    JLabel waketime = new JLabel("Wake Time: " + sleepHistory.get(6).getWakeTime());
-                    JLabel sleepQuality = new JLabel("Sleep Quality: " + sleepHistory.get(6).getSleepQuality() + "/5");
-                    JLabel sleepNotes = new JLabel("Notes: " + sleepHistory.get(6).getSleepNote());
-
-                    panel.setBackground(textbg);
-                    panel.add(date);
-                    panel.add(bedtime);
-                    panel.add(waketime);
-                    panel.add(new JLabel());
-                    panel.add(sleepQuality);
-                    panel.add(sleepNotes);
-
-
-                    infoPanel.add(panel, "2");
-                    historycl.show(infoPanel,"2");
-                }
-            }
-        });
-
-        //NAV BUTTON MOUSELISTENERS
-        //backLabel
-        backLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                //go back to home page
-                mainInstance.cl.show(mainInstance,"3");
-                historycl.show(infoPanel,"0");
-            }
-        });
-    }
-
-    //add a new SleepNode to sleepHistory
+    //add data to sleep history
     public void addDay(SleepNode day){
-        if (sleepHistory.size() == 7) {
-            this.deleteOldSleepData();
-        }
         sleepHistory.add(day);
-
-        drawPage(); //redraw SleepHistory
     }
   
     //calculate average sleep time
@@ -1884,57 +1583,34 @@ class SleepNode{
     private Time bedTime;
     private Time wakeTime;
     private int duration;
+    private int dayOfWeek;
     private String sleepNote;
     private int sleepQuality;
-    private int dayOfWeek;
-    private Date date;
+    // add sleep journal -- notes, and quality of sleep
+    //get the day of the week based on the date
 
     public SleepNode(Time bed, Time wake, String note, int sleepRating){
         bedTime = bed;
         wakeTime = wake;
         sleepNote = note;
         sleepQuality = sleepRating;
-        date = new Date();
-
-        //get the day of the week based on Calendar
-        Calendar c = Calendar.getInstance();
-        dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-        System.out.println(dayOfWeek);
-
-        this.calculateDuration();
+        this.calculateDuration(bed, wake);
     }
-
     // getters
+
     public Time getBedTime(){
         return bedTime;
     }
+
     public Time getWakeTime(){
         return wakeTime;
     }
-    public int getDayOfWeek(){
-        return dayOfWeek;
-    }
-    public String getSleepNote(){
-        return sleepNote;
-    }
-    public int getSleepQuality(){
-        return sleepQuality;
-    }
+    
+    //getters for dayofweek. sleepnote, sleepquality
 
-    public String getDate(){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EE, MMM d, yyyy");
-        String formattedDate = dateFormat.format(date);
-        return formattedDate;
-    }
-
-    public void calculateDuration(){
+    public void calculateDuration(Time sleepTime, Time wakeTime){
         // turn sleeptime and wake time to int, calculate duration
-        if(bedTime.hours < wakeTime.hours) {
-            duration = wakeTime.hours - bedTime.hours;
-        }
-        else {
-            duration = 24 - bedTime.hours + wakeTime.hours;
-        }
+        // duration = 
     }
 
     public int getDuration(){
@@ -2168,8 +1844,8 @@ class Settings extends JPanel{
                     mainInstance.Home = new Home(mainInstance); //have to "reset" the home page in mainInstance
                     mainInstance.add(mainInstance.Home,"3"); //update the old home in the cardlayout
                     
-                    mainInstance.SleepRecs.update(); //update the user values in SleepRecs
-                    mainInstance.SleepRecs.drawPage(); //update the old sleepRecs in the cardlayout
+                    mainInstance.SleepRecs = new SleepRecommendation(mainInstance); //have to "reset" the sleepRecs page in mainInstance
+                    mainInstance.add(mainInstance.SleepRecs,"6"); //update the old sleepRecs in the cardlayout
                     
                     mainInstance.Settings = new Settings(mainInstance); //have to "reset" the settings page in mainInstance
                     mainInstance.add(mainInstance.Settings,"7"); //update the old settings in the cardlayout
