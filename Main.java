@@ -28,7 +28,7 @@ public class Main extends JPanel{
     public static final int WIDTH = 500;
     public static final int HEIGHT = 750;
 
-    User user /*= new User("John",18,8,new Time(22,0),new Time(8,0))*/;
+    User user = new User("John",18,8,new Time(22,0),new Time(8,0));
 
     static JFrame frame = new JFrame("CozyMammoth");
 
@@ -38,7 +38,7 @@ public class Main extends JPanel{
     Home Home = new Home(this);
     SleepHistory SleepHistory = new SleepHistory();
     LogSleep LogSleep = new LogSleep(this);
-    JPanel SleepRecs = new JPanel();
+    SleepRecommendation SleepRecs = new SleepRecommendation(this);
     Settings Settings = new Settings(this);
     //CardLayout to manage JPanel "pages"
     CardLayout cl = new CardLayout();
@@ -72,6 +72,7 @@ public class Main extends JPanel{
         //jframe stuff
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
+
         Main mainInstance = new Main();
         
         //add panels to the cardlayout
@@ -80,8 +81,8 @@ public class Main extends JPanel{
         mainInstance.add(mainInstance.NewUser, "2");
         mainInstance.add(mainInstance.Home, "3");
         mainInstance.add(mainInstance.LogSleep, "5");
+        mainInstance.add(mainInstance.SleepRecs, "6");
         mainInstance.add(mainInstance.Settings, "7");
-        //continue adding panels
 
         frame.setContentPane(mainInstance); //showing Welcome because it's the first panel added
         frame.pack();
@@ -539,8 +540,13 @@ class NewUser extends JPanel{
                     //switch to home page
                     mainInstance.Home = new Home(mainInstance); //have to "reset" the home page in mainInstance
                     mainInstance.add(mainInstance.Home,"3"); //update the old home in the cardlayout
+
+                    mainInstance.SleepRecs = new SleepRecommendation(mainInstance); //have to "reset" the sleepRecs page in mainInstance
+                    mainInstance.add(mainInstance.SleepRecs,"6"); //update the old sleepRecs in the cardlayout
+                    
                     mainInstance.Settings = new Settings(mainInstance); //have to "reset" the settings page in mainInstance
                     mainInstance.add(mainInstance.Settings,"7"); //update the old settings in the cardlayout
+                    
                     mainInstance.cl.show(mainInstance, "3");
                 }
 			}
@@ -561,7 +567,7 @@ class Home extends JPanel{
 
         Color bg = new Color(37,44,64);
         this.setBackground(bg);
-        this.setBorder(BorderFactory.createEmptyBorder(40,20,40,20));
+        this.setBorder(BorderFactory.createEmptyBorder(30,20,40,20));
 
         //main box
         Box box = Box.createVerticalBox();
@@ -580,7 +586,7 @@ class Home extends JPanel{
 
             //JFrame date
             Date j = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
             String formattedDate = dateFormat.format(j);
             JLabel date = new JLabel();
             date.setText(formattedDate);
@@ -600,12 +606,24 @@ class Home extends JPanel{
             JPanel mainWrap = new JPanel(new GridLayout(2,1)); //2 rows, 1 col
             box.add(mainWrap);
 
-            JPanel graphPanel = new JPanel(); //placeholder for graph
-            mainWrap.add(graphPanel);
+            JPanel msgPanel = new JPanel(new GridBagLayout()); //placeholder for sleepmsg
+            mainWrap.add(msgPanel);
 
-            //graph panel styling
-            graphPanel.setBackground(bg2);
-            graphPanel.setBorder(BorderFactory.createEmptyBorder(130,200,130,200));
+            String msg = "Log your sleep activity to get personalized messages!";
+            JLabel sleepMsg = new JLabel("<html><p style=\"width:200px\">"+msg+"</p></html>");
+            sleepMsg.setForeground(Color.WHITE);
+            sleepMsg.setFont(new Font("Arial", Font.PLAIN, 20));
+            msgPanel.add(sleepMsg);
+
+            ImageIcon icon = new ImageIcon("graphics/face-sleeping.png");
+            sleepMsg.setIcon(icon);
+            sleepMsg.setHorizontalTextPosition(JLabel.CENTER);
+            sleepMsg.setVerticalTextPosition(JLabel.BOTTOM);
+            sleepMsg.setIconTextGap(40);
+
+            //msg panel styling
+            msgPanel.setBackground(bg2);
+            msgPanel.setBorder(BorderFactory.createEmptyBorder(0,20,0,20));
 
             JPanel optionsPanel = new JPanel(new GridLayout(2,2,10,20)); //2 rows, 2 cols
             mainWrap.add(optionsPanel);
@@ -647,7 +665,10 @@ class Home extends JPanel{
             //adding nav functionality to the option labels
             options[0].addMouseListener(new MouseAdapter() {
                 @Override
-                public void mousePressed(MouseEvent e) {System.out.println("Sleep Tips pressed");}
+                public void mousePressed(MouseEvent e) {
+                    System.out.println("Sleep Recommendations pressed");
+                    mainInstance.cl.show(mainInstance, "6");
+                }
             });
             options[1].addMouseListener(new MouseAdapter() {
                 @Override
@@ -1159,28 +1180,165 @@ class LogSleep extends JPanel{
     }
 }
 
-class SleepRecommendation extends JPanel /*implements MouseListener*/{
+class SleepRecommendation extends JPanel{
     //gives recommended time to go to sleep
     private Time wakeTime;
     private Time bedTime;
     private double age;
     private int sleepGoal;
     private SleepHistory sleepHistory;
-    private Schedule calendar;
-    private Time[] sleepRecs;
-    private String[] sleepRecsMessages;
+    private Time[] sleepRecs = new Time[5];    //contains 5 recommended times.
+    private String[] sleepRecsMessages = new String[5];
     //to reference for graphics for the page within this class
+    Main mainInstance;
 
-    public SleepRecommendation(Time wakeTime, Time bedTime, double age, int sleepGoal, SleepHistory sleepHistory, Schedule calendar){
-        this.wakeTime = wakeTime;
-        this.bedTime = bedTime;
-        this.age = age;
-        this.sleepGoal = sleepGoal;
-        // the above is user stuff, but rn not calling it anywhere so placeholder
-        this.sleepHistory = sleepHistory;
-        this.calendar = calendar;
-        sleepRecs = new Time[5];    //contains 5 recommended times.
-        sleepRecsMessages = new String[5];
+    public SleepRecommendation(Main main){
+        mainInstance = main;
+
+        //user stuff - taken from mainInstance user
+        if(mainInstance.user != null) {
+            this.wakeTime = mainInstance.user.getWakeTime();
+            this.bedTime = mainInstance.user.getBedTime();
+            this.age = mainInstance.user.getAge();
+            this.sleepGoal = mainInstance.user.getSleepGoal();
+        }
+
+        this.sleepHistory = mainInstance.SleepHistory;
+
+        //-----------------Panel Components/Graphics-----------------
+        Color bg = new Color(42, 54, 89);
+        this.setBackground(bg);
+        this.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+
+        Box mainBox = Box.createVerticalBox();
+        this.add(mainBox);
+
+        //exit arrow
+        ImageIcon backIcon = new ImageIcon("graphics/angle-left.png");
+        JLabel backLabel = new JLabel();
+        backLabel.setIcon(backIcon);
+
+        Box backBox = Box.createVerticalBox();
+        backBox.add(backLabel);
+        mainBox.add(backBox);
+
+        backLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        backLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,440));
+
+        backBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        //title label
+        JLabel title = new JLabel("Get some sleep...");
+        mainBox.add(title);
+        //title styling
+        title.setForeground(Color.WHITE);
+        title.setFont(new Font("Arial", Font.PLAIN, 25));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+        title.setBorder(BorderFactory.createEmptyBorder(20,0,40,0));
+
+        ImageIcon icon = new ImageIcon("graphics/sunset.png");
+        JLabel iconLabel = new JLabel();
+        iconLabel.setIcon(icon);
+        mainBox.add(iconLabel);
+        iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        //subtitle1
+        JLabel subtitle1 = new JLabel("Best Bedtime");
+        mainBox.add(subtitle1);
+        //subtitle1 styling
+        subtitle1.setForeground(Color.WHITE);
+        subtitle1.setFont(new Font("Arial", Font.PLAIN, 15));
+        subtitle1.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+        subtitle1.setBorder(BorderFactory.createEmptyBorder(60,0,20,0));
+
+        //best bedtime
+        JTextField rec1 = new JTextField("00:00 PM");
+        rec1.setForeground(bg);
+        rec1.setFont(new Font("Arial", Font.BOLD, 20));
+        rec1.setEditable(false);
+        rec1.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        rec1.setHorizontalAlignment(JLabel.CENTER);
+        Box wrap1 = Box.createVerticalBox();
+        wrap1.setBorder(BorderFactory.createEmptyBorder(0,150,0,150));
+        
+        wrap1.add(rec1);
+        mainBox.add(wrap1);
+
+        //subtitle2
+        JLabel subtitle2 = new JLabel("Other Suggestions");
+        mainBox.add(subtitle2);
+        //subtitle2 styling
+        subtitle2.setForeground(Color.WHITE);
+        subtitle2.setFont(new Font("Arial", Font.PLAIN, 15));
+        subtitle2.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+        subtitle2.setBorder(BorderFactory.createEmptyBorder(50,0,20,0));
+
+        //other suggestions
+        JTextField rec2 = new JTextField("00:00 PM");
+        JTextField rec3 = new JTextField("00:00 PM");
+        rec2.setForeground(bg);
+        rec2.setFont(new Font("Arial", Font.BOLD, 20));
+        rec2.setEditable(false);
+        rec2.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        rec2.setHorizontalAlignment(JLabel.CENTER);
+        rec3.setForeground(bg);
+        rec3.setFont(new Font("Arial", Font.BOLD, 20));
+        rec3.setEditable(false);
+        rec3.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        rec3.setHorizontalAlignment(JLabel.CENTER);
+        JPanel wrap2 = new JPanel(new GridLayout(1,2,40,0));
+        Box wrap3 = Box.createVerticalBox();
+        wrap2.setBorder(BorderFactory.createEmptyBorder(0,150,0,150));
+
+        wrap2.setOpaque(false);
+        
+        wrap2.add(rec2);
+        wrap2.add(rec3);
+        wrap3.add(wrap2);
+        mainBox.add(wrap3);
+
+        //subtitle3
+        JLabel subtitle3 = new JLabel("For Less Sleep");
+        mainBox.add(subtitle3);
+        //subtitle3 styling
+        subtitle3.setForeground(Color.WHITE);
+        subtitle3.setFont(new Font("Arial", Font.PLAIN, 15));
+        subtitle3.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+        subtitle3.setBorder(BorderFactory.createEmptyBorder(50,0,20,0));
+
+        //for less sleep
+        JTextField rec4 = new JTextField("00:00 PM");
+        JTextField rec5 = new JTextField("00:00 PM");
+        rec4.setForeground(bg);
+        rec4.setFont(new Font("Arial", Font.BOLD, 20));
+        rec4.setEditable(false);
+        rec4.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        rec4.setHorizontalAlignment(JLabel.CENTER);
+        rec5.setForeground(bg);
+        rec5.setFont(new Font("Arial", Font.BOLD, 20));
+        rec5.setEditable(false);
+        rec5.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        rec5.setHorizontalAlignment(JLabel.CENTER);
+        JPanel wrap4 = new JPanel(new GridLayout(1,2,30,0));
+        Box wrap5 = Box.createVerticalBox();
+        wrap4.setBorder(BorderFactory.createEmptyBorder(0,150,0,150));
+
+        wrap4.setOpaque(false);
+        
+        wrap4.add(rec4);
+        wrap4.add(rec5);
+        wrap5.add(wrap4);
+        mainBox.add(wrap5);
+
+        //NAV BUTTON MOUSELISTENERS
+        //backLabel
+        backLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                //go back to home page
+                mainInstance.cl.show(mainInstance,"3");
+            }
+        });
     }
 
     public Time[] calculateSleepRec(){
@@ -1675,8 +1833,13 @@ class Settings extends JPanel{
                     //switch to home page
                     mainInstance.Home = new Home(mainInstance); //have to "reset" the home page in mainInstance
                     mainInstance.add(mainInstance.Home,"3"); //update the old home in the cardlayout
+                    
+                    mainInstance.SleepRecs = new SleepRecommendation(mainInstance); //have to "reset" the sleepRecs page in mainInstance
+                    mainInstance.add(mainInstance.SleepRecs,"6"); //update the old sleepRecs in the cardlayout
+                    
                     mainInstance.Settings = new Settings(mainInstance); //have to "reset" the settings page in mainInstance
                     mainInstance.add(mainInstance.Settings,"7"); //update the old settings in the cardlayout
+                    
                     mainInstance.cl.show(mainInstance, "3");
                 }
 			}
@@ -1686,6 +1849,7 @@ class Settings extends JPanel{
             }
 		});
 
+        //NAV BUTTON MOUSELISTENERS
         //backLabel
         backLabel.addMouseListener(new MouseAdapter() {
             @Override
