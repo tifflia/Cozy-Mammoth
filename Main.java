@@ -1370,18 +1370,9 @@ class SleepRecommendation extends JPanel{
         //calculate goal sleep [0]
         int goalsleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
         int goalsleepRecHours = (wakeTime.getHour() - sleepGoal);
-        // if (goalsleepRecMins < 0){  // make own method or something, generic/extends?
-        //     goalsleepRecMins = 60 - Math.abs(goalsleepRecMins);
-        //     goalsleepRecHours =- 1;
-        // }
-        // if (goalsleepRecHours < 0){
-        //     goalsleepRecHours = 24 + goalsleepRecHours;
-        //     System.out.println("bye" + goalsleepRecHours);
 
-        // }
-        int numOfCycles = (sleepGoal * 60) / 105;           
         sleepRecs[0] = new Time(goalsleepRecHours, goalsleepRecMins);   //contains sleep recommendation based on sleep goal
-        sleepRecsMessages[0] = "According to your set goals (~" + numOfCycles + " cycles), you should sleep at: ";
+        sleepRecsMessages[0] = sleepRecs[0].toString();
 
         //calculates best sleep times
         int hourSubtractor = 7; //best: 5-6 cycles
@@ -1394,70 +1385,32 @@ class SleepRecommendation extends JPanel{
             bestsleepRecMins1 -= 45; //add another sleep cycle (105 mins)
             bestsleepRecHours1 -= 1;
         }
-        // if (bestsleepRecMins1 < 0){
-        //     bestsleepRecMins1 = 60 - Math.abs(bestsleepRecMins1);
-        //     bestsleepRecHours1 =- 1;
-        // }
-        // else if (bestsleepRecHours1 < 0){
-        //     bestsleepRecHours1 = 24 + bestsleepRecHours1;
-        // }
-        numOfCycles = ((bestsleepRecHours1 * 60) + bestsleepRecMins1) / 105;    // check this is right
+        
         sleepRecs[1] = new Time(bestsleepRecHours1, bestsleepRecMins1); //contains sleep recommendation based on ideal sleep cycles for age
-        // if (sleepRecs[1] == sleepRecs[2]){  // if same as goal-based rec, give rec with more sleep cycles
-        //     mins += 90;
-        //     bestsleepRecHours = mins / 60;
-        //     bestsleepRecMins = ((mins % 60) * 60) / 100;
-        //     sleepRecs[1] = new Time (bestsleepRecHours, bestsleepRecMins);
-        // }
-        sleepRecsMessages[1] = "To sleep " + numOfCycles + " cycles, you should sleep at: ";
+        sleepRecsMessages[1] = sleepRecs[1].toString();
 
         //calculate MoreSleepRec
         int bestsleepRecMins2 = ((wakeTime.getMinutes() - (minSubtractor+30)- 15)); //add another cycle (6 cycles recommended)
         int bestsleepRecHours2 = (wakeTime.getHour() - (hourSubtractor+1));
-
-        // if (bestsleepRecMins2 < 0){
-        //     bestsleepRecMins2 = 60 - Math.abs(bestsleepRecMins2);
-        //     bestsleepRecHours2 =- 1;
-        // }
-        // else if (bestsleepRecHours2 < 0){
-        //     bestsleepRecHours2 = 24 + bestsleepRecHours2;
-        // }
-        numOfCycles = ((bestsleepRecHours2 * 60) + bestsleepRecMins2) / 90;
         sleepRecs[2] = new Time(bestsleepRecHours2, bestsleepRecMins2); //contains sleep recommendation based on ideal sleep cycles for age
-        sleepRecsMessages[2] = "To sleep " + numOfCycles + " cycles, you should sleep at: ";
+        sleepRecsMessages[2] = sleepRecs[2].toString();
 
         //calculates less sleep times
         int hourAdd = 0;
         int minAdd = 0;
         int lessSleepRecMins1 = 0;
         int lessSleepRecHours1 = 0;
-        // check if same as 2 and 3. if so, -90 again --> shouldnt be tho? 2 and 3 should be greater than goal?
         lessSleepRecMins1 = goalsleepRecMins - 30;  // one cycle less than goal sleep rec
         lessSleepRecHours1 = goalsleepRecHours - 1;
-        // if (lessSleepRecMins1 < 0){
-        //     lessSleepRecMins1 = 60 - Math.abs(lessSleepRecMins1);
-        //     lessSleepRecHours1 =- 1;
-        // }
-        // if (lessSleepRecHours1 < 0){
-        //     lessSleepRecHours1 = 24 + lessSleepRecHours1;
-        // }
-        // int mins = (bestsleepRecHours * 60) + bestsleepRecMins;
-        numOfCycles = ((lessSleepRecHours1 * 60) + lessSleepRecMins1) / 90;    // check this is right
+        
         sleepRecs[3] = new Time(lessSleepRecHours1, lessSleepRecMins1); //contains sleep recommendation based on ideal sleep cycles for age
-        sleepRecsMessages[3] = "To sleep " + numOfCycles + " cycles, you should sleep at: ";
+        sleepRecsMessages[3] = sleepRecs[3].toString();
+
         //calculate less sleep rec
         int lessSleepRecMins2 = lessSleepRecMins1 - 30;  // one cycle less than prev sleep rec
         int lessSleepRecHours2 = lessSleepRecHours1 - 1;
-        // if (lessSleepRecMins2 < 0){
-        //     lessSleepRecMins2 = 60 - Math.abs(lessSleepRecMins2);
-        //     lessSleepRecHours2 =- 1;
-        // }
-        // if (lessSleepRecHours2 < 0){
-        //     lessSleepRecHours2 = 24 + lessSleepRecHours2;
-        // }
-        numOfCycles = ((lessSleepRecHours2 * 60) + lessSleepRecMins2) / 90;
         sleepRecs[4] = new Time(lessSleepRecHours2, lessSleepRecMins2); //contains sleep recommendation based on ideal sleep cycles for age
-        sleepRecsMessages[4] = "To sleep " + numOfCycles + " cycles, you should sleep at: ";
+        sleepRecsMessages[4] = sleepRecs[4].toString();
 
 
         return sleepRecs;
@@ -1502,19 +1455,20 @@ class SleepRecommendation extends JPanel{
     }
 
     public String sleepHistorySummary(){
-        //if average of durations of past week/7 days is < sleep goal hours,
-        double average = 3;   // get history
-        if (average <= 1.0){
-            this.sleepSummary = "You haven't been meeting your sleep goal. Try to sleep more today!";
-        } else if (average > 1.0 && average < 4.0){
-            this.sleepSummary = "Good! You met your goal n times over the past 7 days";
+        double average = 0;   // get history
+        average = (sleepHistory.get(0).getAverageDuration + sleepHistory.get(1).getAverageDuration
+        + sleepHistory.get(2).getAverageDuration +sleepHistory.get(3).getAverageDuration +sleepHistory.get(4).getAverageDuration +
+        sleepHistory.get(5).getAverageDuration + sleepHistory.get(6).getAverageDuration) / 7;
+
+        if (average < sleepGoal){
+            sleepSummary = "You haven't been meeting your sleep goal. Try to sleep more today!";
+            return sleepSummary;
         }
-        //else if average is sleep goal at least -- counter > 0 && counter < 4:
-        else if (average >= 4.0){
-            this.sleepSummary = "Great! You met your goal n times in the past 7 days.";
-        }
-        return this.sleepSummary;
+        else{
+            sleepSummary = "Great! You met your goal in the past 7 days.";
+            return sleepSummary;
     }
+        return sleepSummary;
 }
 
 class SleepHistory extends JPanel{
@@ -1854,13 +1808,6 @@ class SleepHistory extends JPanel{
         sleepHistory.remove(0);
     }
     
-    //sort data in order (days of week)
-
-
-    //draw method
-
-
-    // have settings where can set which day you want new summary to show. default could be on sunday.)
 }
 
 class SleepNode{
