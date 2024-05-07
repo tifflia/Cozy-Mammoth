@@ -1513,9 +1513,10 @@ class SleepRecommendation extends JPanel{
             return sleepSummary;
         }
         //else if average is sleep goal at least -- counter > 0 && counter < 4:
-        return "Good! You met your goal n times over the past 7 days";
-        //else if coutner >= 4, return "Great! You met your goal n times in the past 7 days.";
-    }
+        else if (average >= 4){
+            sleepSummary = "Great! You met your goal n times in the past 7 days.";
+            return sleepSummary;
+        //else if coutner >= 4, return "";
 }
 
 class SleepHistory extends JPanel{
