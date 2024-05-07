@@ -1879,6 +1879,14 @@ class SleepHistory extends JPanel{
     public void deleteOldSleepData(){
         sleepHistory.remove(0);
     }
+    
+    //sort data in order (days of week)
+
+
+    //draw method
+
+
+    // have settings where can set which day you want new summary to show. default could be on sunday.)
 }
 
 class SleepNode{
