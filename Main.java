@@ -32,7 +32,6 @@ public class Main extends JPanel{
     Home Home = new Home(this);
     JPanel SleepHistory = new JPanel();
     LogSleep LogSleep = new LogSleep(this);
-    // JPanel LogSleep2 = new JPanel();
     JPanel SleepRecs = new JPanel();
     JPanel Settings = new JPanel();
     //CardLayout to manage JPanel "pages"
