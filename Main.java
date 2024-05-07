@@ -1528,19 +1528,20 @@ class SleepRecommendation extends JPanel{
     }
 
     public String sleepHistorySummary(){
-        //if average of durations of past week/7 days is < sleep goal hours,
-        double average = 3;   // get history
-        if (average <= 1.0){
-            this.sleepSummary = "You haven't been meeting your sleep goal. Try to sleep more today!";
-        } else if (average > 1.0 && average < 4.0){
-            this.sleepSummary = "Good! You met your goal n times over the past 7 days";
+        double average = 0;   // get history
+        average = (sleepHistory.get(0).getAverageDuration + sleepHistory.get(1).getAverageDuration
+        + sleepHistory.get(2).getAverageDuration +sleepHistory.get(3).getAverageDuration +sleepHistory.get(4).getAverageDuration +
+        sleepHistory.get(5).getAverageDuration + sleepHistory.get(6).getAverageDuration) / 7;
+
+        if (average < sleepGoal){
+            sleepSummary = "You haven't been meeting your sleep goal. Try to sleep more today!";
+            return sleepSummary;
         }
-        //else if average is sleep goal at least -- counter > 0 && counter < 4:
-        else if (average >= 4.0){
-            this.sleepSummary = "Great! You met your goal n times in the past 7 days.";
-        }
-        return this.sleepSummary;
+        else{
+            sleepSummary = "Great! You met your goal in the past 7 days.";
+            return sleepSummary;
     }
+        return sleepSummary;
 }
 
 class SleepHistory extends JPanel{
@@ -1880,13 +1881,6 @@ class SleepHistory extends JPanel{
         sleepHistory.remove(0);
     }
     
-    //sort data in order (days of week)
-
-
-    //draw method
-
-
-    // have settings where can set which day you want new summary to show. default could be on sunday.)
 }
 
 class SleepNode{
