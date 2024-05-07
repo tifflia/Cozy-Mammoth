@@ -602,9 +602,9 @@ class Home extends JPanel{
             for(int i = 0; i < 7; i++) {
                 if(mainInstance.SleepHistory.sleepHistory.get(i) != null) counter++;
             }
-            if (counter >= 7) {
-                msg = mainInstance.SleepRecs.sleepHistorySummary();
-            }
+            // if (counter >= 7) {
+            //     msg = mainInstance.SleepRecs.sleepHistorySummary();
+            // }
 
             JLabel sleepMsg = new JLabel("<html><p style=\"width:200px\">"+msg+"</p></html>");
             sleepMsg.setForeground(Color.WHITE);
@@ -1454,21 +1454,22 @@ class SleepRecommendation extends JPanel{
         return sleepRecsMessages[index];
     }
 
-    public String sleepHistorySummary(){
-        double average = 0;   // get history
-        average = (sleepHistory.get(0).getAverageDuration + sleepHistory.get(1).getAverageDuration
-        + sleepHistory.get(2).getAverageDuration +sleepHistory.get(3).getAverageDuration +sleepHistory.get(4).getAverageDuration +
-        sleepHistory.get(5).getAverageDuration + sleepHistory.get(6).getAverageDuration) / 7;
+//     public String sleepHistorySummary(){
+//         double average = 0;   // get history
+//         average = (sleepHistory.get(0).getAverageDuration + sleepHistory.get(1).getAverageDuration
+//         + sleepHistory.get(2).getAverageDuration +sleepHistory.get(3).getAverageDuration +sleepHistory.get(4).getAverageDuration +
+//         sleepHistory.get(5).getAverageDuration + sleepHistory.get(6).getAverageDuration) / 7;
 
-        if (average < sleepGoal){
-            sleepSummary = "You haven't been meeting your sleep goal. Try to sleep more today!";
-            return sleepSummary;
-        }
-        else{
-            sleepSummary = "Great! You met your goal in the past 7 days.";
-            return sleepSummary;
-    }
-        return sleepSummary;
+//         if (average < sleepGoal){
+//             sleepSummary = "You haven't been meeting your sleep goal. Try to sleep more today!";
+//             return sleepSummary;
+//         }
+//         else{
+//             sleepSummary = "Great! You met your goal in the past 7 days.";
+//             return sleepSummary;
+//     }
+//         return sleepSummary;
+// }
 }
 
 class SleepHistory extends JPanel{
