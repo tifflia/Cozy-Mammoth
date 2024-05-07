@@ -5,6 +5,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -28,21 +30,20 @@ public class Main extends JPanel{
     public static final int WIDTH = 500;
     public static final int HEIGHT = 750;
 
-    User user = new User("John",18,8,new Time(22,0),new Time(8,0));
+    User user;
 
     static JFrame frame = new JFrame("CozyMammoth");
 
     //App Pages (JPanels)
-    Welcome Welcome = new Welcome(this);
-    NewUser NewUser = new NewUser(this);
-    SleepHistory SleepHistory = new SleepHistory(this);
-    LogSleep LogSleep = new LogSleep(this);
-    SleepRecommendation SleepRecs = new SleepRecommendation(this);
-    Settings Settings = new Settings(this);
-    Home Home = new Home(this);
+    Welcome Welcome;
+    NewUser NewUser;
+    SleepHistory SleepHistory;
+    LogSleep LogSleep;
+    SleepRecommendation SleepRecs;
+    Settings Settings;
+    Home Home;
     //CardLayout to manage JPanel "pages"
     CardLayout cl = new CardLayout();
-    Date dateLastOpened;
     Date currentDate;
 
     //thread to update the current time
@@ -50,7 +51,7 @@ public class Main extends JPanel{
         public void run() {
             while(true){
                 //update the currentDate
-                
+                currentDate = new Date();
                 //get the "currentDate" Date object from Sleephistory and update it every second (= new Date();)
                 try{
                     Thread.sleep(1000); //every second...
@@ -63,12 +64,23 @@ public class Main extends JPanel{
     }
 
     //constructor
-    public Main(){
+    public Main(User user){
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
         //Thread that updates the currentDate
         Thread mainThread = new Thread(new Runner());
         mainThread.start();
+
+        this.user = user;
+
+        //instantiate panels
+        Welcome = new Welcome(this);
+        NewUser = new NewUser(this);
+        SleepHistory = new SleepHistory(this);
+        LogSleep = new LogSleep(this);
+        SleepRecs = new SleepRecommendation(this);
+        Settings = new Settings(this);
+        Home = new Home(this);
     }
 
     public static void main(String[] args){
@@ -76,11 +88,15 @@ public class Main extends JPanel{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
 
-        //*****
+        //*****LOADING USER DATA ON WINDOW CLOSE******
         //look into the directory for the file
-        // check if the file has a date, if it does, compare with current date
+        ProcessFiles process = new ProcessFiles();
+        Point saved = process.loadPointFromFile("userData.txt");
+        User savedUser = new User(saved.name, saved.age, saved.sleepGoal, new Time(saved.bedHours,saved.bedMins), new Time(saved.wakeHours,saved.wakeMins));
 
-        Main mainInstance = new Main();
+        Main mainInstance = new Main(savedUser);
+        
+        // check if the file has a date, if it does, compare with current date
         
         //add panels to the cardlayout
         mainInstance.setLayout(mainInstance.cl);
@@ -125,6 +141,20 @@ public class Main extends JPanel{
         // System.out.println(testHistory.getAverageDuration());
         SleepNode test = new SleepNode(new Time(0,0),new Time(6,0),"My sleep was ok.",3);
         mainInstance.SleepHistory.addDay(test);
+
+        //*****SAVING USER DATA ON WINDOW CLOSE******
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // when button is pressed create processfiles object
+                ProcessFiles process = new ProcessFiles();
+                // get user data, savepointtofile, then terminate
+                if(mainInstance.user != null) {
+                    Point userPoint = new Point(mainInstance.user.getName(), mainInstance.user.getAge(), mainInstance.user.getSleepGoal(), mainInstance.user.getBedTime().hours, mainInstance.user.getBedTime().minutes, mainInstance.user.getWakeTime().hours, mainInstance.user.getWakeTime().minutes);
+                    process.savePointToFile(userPoint, "userData.txt");
+                }
+            }
+        });
     }
 }
 
@@ -554,6 +584,7 @@ class Home extends JPanel{
             //create button that runs system.exit()
             // when button is pressed create processfiles object
             // get date, savepointtofile, then call system.exit()
+            
 
             Box header = Box.createVerticalBox();
 

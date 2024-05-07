@@ -3,14 +3,22 @@ import java.io.FileNotFoundException;
 import java.io.File;
 import java.util.Scanner;
 class Point{
-    double x;
-    double y;
-    public Point(double x, double y){
-	this.x = x;
-	this.y = y;
-    }
-    public boolean equals(Point other){
-	return this.x == other.x && this.y == other.y;
+	String name;
+	double age;
+	int sleepGoal;
+	int bedHours;
+	int bedMins;
+	int wakeHours;
+	int wakeMins;
+
+    public Point(String name, double age, int sleepGoal, int bedHours, int bedMins, int wakeHours, int wakeMins){
+		this.name = name;
+		this.age = age;
+		this.sleepGoal = sleepGoal;
+		this.bedHours = bedHours;
+		this.bedMins = bedMins;
+		this.wakeHours = wakeHours;
+		this.wakeMins = wakeMins;
     }
 }
 
@@ -74,28 +82,42 @@ public class ProcessFiles{
     }
 
     public static Point loadPointFromFile(String fileName){
-	double x = 0;
-	double y = 0;
-	
-	try{
-	    Scanner s = new Scanner(new File(fileName));
-	    x = s.nextDouble();
-	    y = s.nextDouble();
-	}
-	catch (Exception e){
-	    System.out.println("Badness in loadPointFromFile");
-	    System.err.println(e);
-	}
-	System.out.println("Returning!");
-	return new Point(x, y);
+		String name = null;
+		double age = 0;
+		int sleepGoal = 0;
+		int bedHours = 0;
+		int bedMins = 0;
+		int wakeHours = 0;
+		int wakeMins = 0;
 
-
+		try{
+			Scanner s = new Scanner(new File(fileName));
+			name = s.nextLine();
+			age = s.nextDouble();
+			sleepGoal = s.nextInt();
+			bedHours = s.nextInt();
+			bedMins = s.nextInt();
+			wakeHours = s.nextInt();
+			wakeMins = s.nextInt();
+		}
+		catch (Exception e){
+			System.out.println("Badness in loadPointFromFile");
+			System.err.println(e);
+		}
+		System.out.println("Returning!");
+		return new Point(name, age, sleepGoal, bedHours, bedMins, wakeHours, wakeMins);
     }
+
     public static void savePointToFile(Point p, String fileName){
 	try{
 	    PrintWriter writer = new PrintWriter(fileName);
-	    writer.write(p.x +  " ");
-	    writer.write(p.y + "");
+	    writer.write(p.name +  "\n");
+	    writer.write(p.age + "\n");
+		writer.write(p.sleepGoal + "\n");
+		writer.write(p.bedHours + "\n");
+		writer.write(p.bedMins + "\n");
+		writer.write(p.wakeHours + "\n");
+		writer.write(p.wakeMins + "");
 	    writer.close();
 	}
 	catch (FileNotFoundException e){
@@ -105,12 +127,5 @@ public class ProcessFiles{
     }    
 
     public static void main(String args[]) {
-	Split("sample.txt", "words.txt", "numbers.txt");
-	Point p1 = new Point(1.0, 2.0);
-	savePointToFile(p1, "point.txt");
-	Point p2 = loadPointFromFile("point.txt");
-	System.out.println("The points are equal? " + p1.equals(p2));
-	CopyWithLineNumbers("sample.txt", "output.txt");
-	Split("sample.txt", "words.txt", "numbers.txt");
     }
 }
