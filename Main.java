@@ -35,11 +35,11 @@ public class Main extends JPanel{
     //App Pages (JPanels)
     Welcome Welcome = new Welcome(this);
     NewUser NewUser = new NewUser(this);
-    Home Home = new Home(this);
     SleepHistory SleepHistory = new SleepHistory(this);
     LogSleep LogSleep = new LogSleep(this);
     SleepRecommendation SleepRecs = new SleepRecommendation(this);
     Settings Settings = new Settings(this);
+    Home Home = new Home(this);
     //CardLayout to manage JPanel "pages"
     CardLayout cl = new CardLayout();
     Date dateLastOpened;
@@ -582,6 +582,16 @@ class Home extends JPanel{
             mainWrap.add(msgPanel);
 
             String msg = "Log your sleep activity to get personalized messages!";
+
+            //making sure there are 7 SleepNodes in sleepHistory to work with, before assigning the message
+            int counter = 0;
+            for(int i = 0; i < 7; i++) {
+                if(mainInstance.SleepHistory.sleepHistory.get(i) != null) counter++;
+            }
+            if (counter >= 7) {
+                msg = mainInstance.SleepRecs.sleepHistorySummary();
+            }
+
             JLabel sleepMsg = new JLabel("<html><p style=\"width:200px\">"+msg+"</p></html>");
             sleepMsg.setForeground(Color.WHITE);
             sleepMsg.setFont(new Font("Arial", Font.PLAIN, 20));
@@ -999,10 +1009,15 @@ class LogSleep extends JPanel{
                     for(int i = 0; i < 5; i++) {
                         faces[i].setIcon(faceIcons[i]);
                     }
+                    bedtimeCB.setSelectedItem("AM");
+                    wakeupCB.setSelectedItem("AM");
                     mainInstance.LogSleep.clearLog();
 
                     //go back to Home
                     mainInstance.SleepHistory.drawPage(); //update the sleepHistory page
+
+                    mainInstance.Home = new Home(mainInstance); //have to "reset" the home page in mainInstance
+                    mainInstance.add(mainInstance.Home,"3"); //update the old home in the cardlayout
                     
                     mainInstance.cl.show(mainInstance, "3");
                     mainInstance.LogSleep.logcl.show(mainInstance.LogSleep,"1");
@@ -1501,22 +1516,20 @@ class SleepRecommendation extends JPanel{
         return sleepRecsMessages[index];
     }
 
-    public String sleepHistorySummary(SleepNode curr){
+    public String sleepHistorySummary(){
         //if average of durations of past week/7 days is < sleep goal hours,
         double average = 3;   // get history
-        if (average < 1){
-            sleepSummary = "You haven't been meeting your sleep goal. Try to sleep more today!";
-            return sleepSummary;
-        }
-        else if (average > 0 && average < 4){
-            sleepSummary= "Good! You met your goal n times over the past 7 days";
-            return sleepSummary;
+        if (average <= 1.0){
+            this.sleepSummary = "You haven't been meeting your sleep goal. Try to sleep more today!";
+        } else if (average > 1.0 && average < 4.0){
+            this.sleepSummary = "Good! You met your goal n times over the past 7 days";
         }
         //else if average is sleep goal at least -- counter > 0 && counter < 4:
-        else if (average >= 4){
-            sleepSummary = "Great! You met your goal n times in the past 7 days.";
-            return sleepSummary;
-        //else if coutner >= 4, return "";
+        else if (average >= 4.0){
+            this.sleepSummary = "Great! You met your goal n times in the past 7 days.";
+        }
+        return this.sleepSummary;
+    }
 }
 
 class SleepHistory extends JPanel{
