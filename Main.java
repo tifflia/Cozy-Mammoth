@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,7 +34,6 @@ public class Main extends JPanel{
     LogSleep LogSleep = new LogSleep(this);
     // JPanel LogSleep2 = new JPanel();
     JPanel SleepRecs = new JPanel();
-    JPanel Schedule = new JPanel();
     JPanel Settings = new JPanel();
     //CardLayout to manage JPanel "pages"
     CardLayout cl = new CardLayout();
@@ -464,12 +464,16 @@ class NewUser extends JPanel{
         button.setFont(new Font("Arial", Font.PLAIN, 15));
 
         //MOUSELISTENER (for button)
-        button.addMouseListener(new MouseListener() {
+        button.addMouseListener(new MouseAdapter() {
+            @Override
 			public void mousePressed(MouseEvent e) {
                 Color clickedButtColor = new Color(51, 77, 156);
                 button.setBackground(clickedButtColor);
 				System.out.println("button has been pressed");
 
+                //check name
+                String name = texts[0].getText();
+                boolean validName = (name != null);
                 //check age
                 double age = Double.parseDouble(texts[1].getText());
                 boolean validAge = (age > 0);
@@ -481,22 +485,24 @@ class NewUser extends JPanel{
                 int bedMins = Integer.parseInt(texts[4].getText());
                 boolean validBed = Time.checkTime(bedHours, bedMins);
                 String bedMeridiem = bedtimeCB.getSelectedItem().toString();
-                System.out.println(bedHours + ":" + bedMins + " " + bedMeridiem);
                 System.out.println(validBed);
                 //check wakeup
                 int wakeHours = Integer.parseInt(texts[5].getText());
                 int wakeMins = Integer.parseInt(texts[6].getText());
                 boolean validWake = Time.checkTime(wakeHours, wakeMins);
                 String wakeMeridiem = wakeupCB.getSelectedItem().toString();
-                System.out.println(wakeHours + ":" + wakeMins + " " + wakeMeridiem);
                 System.out.println(validWake);
 
                 //initialize the new user to the mainInstance
-                if(validAge && validSleepGoal && validBed && validWake) {
+                if(validName && validAge && validSleepGoal && validBed && validWake) {
                     //User(String userName, double userAge, int sleep, Time bed, Time wake)
                     Time bed = new Time(Time.convertHours(bedHours, bedMeridiem), bedMins);
                     Time wake = new Time(Time.convertHours(wakeHours, wakeMeridiem), wakeMins);
-                    mainInstance.user = new User(texts[0].getText(), age, sleepGoal, bed, wake);
+
+                    System.out.println(bed);
+                    System.out.println(wake);
+
+                    mainInstance.user = new User(name, age, sleepGoal, bed, wake);
 
                     //switch to home page
                     mainInstance.Home = new Home(mainInstance); //have to "reset" the home page in mainInstance
@@ -504,12 +510,10 @@ class NewUser extends JPanel{
                     mainInstance.cl.show(mainInstance, "3");
                 }
 			}
+            @Override
             public void mouseReleased(MouseEvent e) {
                 button.setBackground(buttColor);
             }
-            public void mouseEntered(MouseEvent e) {}
-            public void mouseExited(MouseEvent e) {}
-            public void mouseClicked(MouseEvent e) {}
 		});
     }
 }
@@ -573,7 +577,7 @@ class Home extends JPanel{
 
             //creating the option labels
             JLabel[] options = new JLabel[4];
-            options[0] = new JLabel("Sleep Tips");
+            options[0] = new JLabel("Sleep Recommendations");
             options[1] = new JLabel("Log Sleep");
             options[2] = new JLabel("Sleep History");
             options[3] = new JLabel("Settings");
@@ -602,46 +606,34 @@ class Home extends JPanel{
             }
 
             //adding nav functionality to the option labels
-            options[0].addMouseListener(new MouseListener() {
-                public void mousePressed(MouseEvent e) {}
-                public void mouseReleased(MouseEvent e) {}
-                public void mouseEntered(MouseEvent e) {}
-                public void mouseExited(MouseEvent e) {}
-                public void mouseClicked(MouseEvent e) {System.out.println("Sleep Tips pressed");}
+            options[0].addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {System.out.println("Sleep Tips pressed");}
             });
-            options[1].addMouseListener(new MouseListener() {
-                public void mousePressed(MouseEvent e) {}
-                public void mouseReleased(MouseEvent e) {}
-                public void mouseEntered(MouseEvent e) {}
-                public void mouseExited(MouseEvent e) {}
-                public void mouseClicked(MouseEvent e) {
-                    System.out.println("Log Sleep pressed");
+            options[1].addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    System.out.println("Log Sleep pressed -> LogSleep");
                     mainInstance.cl.show(mainInstance, "4");
                 }
             });
-            options[2].addMouseListener(new MouseListener() {
-                public void mousePressed(MouseEvent e) {}
-                public void mouseReleased(MouseEvent e) {}
-                public void mouseEntered(MouseEvent e) {}
-                public void mouseExited(MouseEvent e) {}
-                public void mouseClicked(MouseEvent e) {System.out.println("Sleep History pressed");}
+            options[2].addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {System.out.println("Sleep History pressed");}
             });
-            options[3].addMouseListener(new MouseListener() {
-                public void mousePressed(MouseEvent e) {}
-                public void mouseReleased(MouseEvent e) {}
-                public void mouseEntered(MouseEvent e) {}
-                public void mouseExited(MouseEvent e) {}
-                public void mouseClicked(MouseEvent e) {System.out.println("Settings pressed");}
+            options[3].addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {System.out.println("Settings pressed");}
             });
         }
     }
 }
 
 //LogSleep page Jpanel
-class LogSleep extends JPanel /*implements MouseListener*/{
+class LogSleep extends JPanel{
     private Time sleepTime;
     private Time wakeTime;
-    private int rating; //sleep quality rating from 1-5
+    private int rating = 0; //sleep quality rating from 1-5
     private String sleepNote;
 
     Main mainInstance;
@@ -781,25 +773,30 @@ class LogSleep extends JPanel /*implements MouseListener*/{
         button1.setForeground(Color.WHITE);
         button1.setFont(new Font("Arial", Font.PLAIN, 15));
 
-        button1.addMouseListener(new MouseListener() {
+        button1.addMouseListener(new MouseAdapter() {
+            @Override
 			public void mousePressed(MouseEvent e) {
                 Color clickedButtColor = new Color(51, 77, 156);
                 button1.setBackground(clickedButtColor);
 				System.out.println("button has been pressed");
-
+			}
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                button1.setBackground(buttColor);
+            }
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 //check bedtime
                 int bedHours = Integer.parseInt(logHrsFields[0].getText());
                 int bedMins = Integer.parseInt(logHrsFields[1].getText());
                 boolean validBed = Time.checkTime(bedHours, bedMins);
                 String bedMeridiem = bedtimeCB.getSelectedItem().toString();
-                System.out.println(bedHours + ":" + bedMins + " " + bedMeridiem);
                 System.out.println(validBed);
                 //check wakeup
                 int wakeHours = Integer.parseInt(logHrsFields[2].getText());
                 int wakeMins = Integer.parseInt(logHrsFields[3].getText());
                 boolean validWake = Time.checkTime(wakeHours, wakeMins);
                 String wakeMeridiem = wakeupCB.getSelectedItem().toString();
-                System.out.println(wakeHours + ":" + wakeMins + " " + wakeMeridiem);
                 System.out.println(validWake);
 
                 //set LogSleep's sleepTime and wakeTime
@@ -809,16 +806,13 @@ class LogSleep extends JPanel /*implements MouseListener*/{
                     mainInstance.LogSleep.setSleepTime(bed);
                     mainInstance.LogSleep.setWakeTime(wake);
 
+                    System.out.println(bed);
+                    System.out.println(wake);
+
                     //switch to logPanel2
                     mainInstance.LogSleep.logcl.show(mainInstance.LogSleep, "2");
                 }
-			}
-            public void mouseReleased(MouseEvent e) {
-                button1.setBackground(buttColor);
             }
-            public void mouseEntered(MouseEvent e) {}
-            public void mouseExited(MouseEvent e) {}
-            public void mouseClicked(MouseEvent e) {}
 		});
 
 
@@ -852,19 +846,27 @@ class LogSleep extends JPanel /*implements MouseListener*/{
         title2.setForeground(Color.WHITE);
         title2.setFont(new Font("Arial", Font.PLAIN, 25));
         title2.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
-        title2.setBorder(BorderFactory.createEmptyBorder(50,0,100,0));
+        title2.setBorder(BorderFactory.createEmptyBorder(50,0,80,0));
 
-        //QUALITY/RATING box
+        //SLEEP QUALITY/RATING
         Box ratingBox = Box.createHorizontalBox();
         Box ratingBoxWrap = Box.createVerticalBox();
 
-        //rating face icons
+        //face icons
         JLabel[] faces = new JLabel[5];
+        ImageIcon[] faceIcons = new ImageIcon[5]; //normal faces
+        ImageIcon[] facePickedIcons = new ImageIcon[5]; //highlighted faces
 
         for(int i = 0; i < 5; i++) {
             ImageIcon faceIcon = new ImageIcon("graphics/" + (i+1) + ".png");
             faces[i] = new JLabel();
             faces[i].setIcon(faceIcon);
+            faceIcons[i] = faceIcon;
+            ImageIcon facePickedIcon = new ImageIcon("graphics/" + (i+1) + "pick.png");
+            facePickedIcons[i] = facePickedIcon;
+
+            //face icon styling
+            faces[i].setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
 
             ratingBox.add(faces[i]);
         }
@@ -881,6 +883,189 @@ class LogSleep extends JPanel /*implements MouseListener*/{
         mainBox2.add(subtitle1);
         
         mainBox2.add(ratingBoxWrap);
+
+        JLabel subtitle2 = new JLabel("Notes");
+        subtitle2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainBox2.add(subtitle2);
+
+        //subtitle styling
+        subtitle1.setForeground(Color.WHITE);
+        subtitle1.setFont(new Font("Arial", Font.PLAIN, 15));
+        subtitle1.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+        subtitle1.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
+        subtitle2.setForeground(Color.WHITE);
+        subtitle2.setFont(new Font("Arial", Font.PLAIN, 15));
+        subtitle2.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
+        subtitle2.setBorder(BorderFactory.createEmptyBorder(40,0,20,0));
+
+        //SLEEP NOTES
+        JTextArea notesText = new JTextArea(10,10);
+        JScrollPane scrollPane = new JScrollPane(notesText);
+        Box notesBox = Box.createVerticalBox();
+        notesBox.add(scrollPane);
+        mainBox2.add(notesBox); //put it in a box so side borders can be added
+        notesText.setLineWrap(true);
+        notesText.setForeground(bg);
+        notesText.setBackground(textbg);
+        notesText.setFont(new Font("Arial", Font.PLAIN, 15));
+        notesText.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        notesText.setAlignmentX(Component.CENTER_ALIGNMENT);
+        notesBox.setBorder(BorderFactory.createEmptyBorder(0,50,0,50));
+        notesBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        //BUTTON
+        //adding box that wraps the done button to the main box
+        JButton button2 = new JButton("Done");
+        Box buttonWrap2 = Box.createVerticalBox();
+        buttonWrap2.add(button2);
+        mainBox2.add(buttonWrap2);
+
+        button2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonWrap2.setBorder(BorderFactory.createEmptyBorder(50,0,0,0));
+        buttonWrap2.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        button2.setMargin(new Insets(10,50,10,50));
+        button2.setBackground(buttColor);
+        button2.setOpaque(true);
+        button2.setBorderPainted(false);
+        button2.setForeground(Color.WHITE);
+        button2.setFont(new Font("Arial", Font.PLAIN, 15));
+
+        button2.addMouseListener(new MouseAdapter() {
+            @Override
+			public void mousePressed(MouseEvent e) {
+                Color clickedButtColor = new Color(51, 77, 156);
+                button2.setBackground(clickedButtColor);
+				System.out.println("button has been pressed");
+			}
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                button2.setBackground(buttColor);
+            }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                //set LogSleep's rating and sleepNote
+                if(true) {
+                    //set LogSleep's sleepNote (rating should already be set)
+                    sleepNote = notesText.getText();
+
+                    //create the sleepNode (call LogSleep's method) and add it to the SleepHistory arrayList(?)
+                    //
+
+                    //when done, reset all the textfields/textareas/rating, and clear the LogSleep data (make null)
+                    for(int i = 0; i < 4; i++) {
+                        logHrsFields[i].setText("");
+                    }
+                    notesText.setText("");
+                    for(int i = 0; i < 5; i++) {
+                        faces[i].setIcon(faceIcons[i]);
+                    }
+                    mainInstance.LogSleep.clearLog();
+                    //go back to Home
+                    mainInstance.cl.show(mainInstance, "3");
+                    mainInstance.LogSleep.logcl.show(mainInstance.LogSleep,"1");
+                }
+            }
+		});
+
+        //NAV BUTTON MOUSELISTENERS
+        //exitLabel
+        exitLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                //when exiting, reset all the textfields/textareas, and clear the LogSleep data (make null)
+                for(int i = 0; i < 4; i++) {
+                    logHrsFields[i].setText("");
+                }
+                notesText.setText("");
+                for(int i = 0; i < 5; i++) {
+                    faces[i].setIcon(faceIcons[i]);
+                }
+                mainInstance.LogSleep.clearLog();
+                //go back to Home
+                mainInstance.cl.show(mainInstance,"3");
+            }
+        });
+        //backLabel
+        backLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                //go back to logSleep1
+                mainInstance.LogSleep.logcl.show(mainInstance.LogSleep,"1");
+            }
+        });
+
+        //RATING FACES MOUSELISTENERS
+        faces[0].addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                faces[0].setIcon(facePickedIcons[0]); //change highlighted
+                //make sure the other faces are normal
+                for(int i = 0; i < 5; i++) {
+                    if(i != 0) {
+                        faces[i].setIcon(faceIcons[i]);
+                    }
+                }
+                rating = 1;
+                System.out.println("rating is: " + rating);
+            }
+        });
+        faces[1].addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                faces[1].setIcon(facePickedIcons[1]); //change highlighted
+                //make sure the other faces are normal
+                for(int i = 0; i < 5; i++) {
+                    if(i != 1) {
+                        faces[i].setIcon(faceIcons[i]);
+                    }
+                }
+                rating = 2;
+                System.out.println("rating is: " + rating);
+            }
+        });
+        faces[2].addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                faces[2].setIcon(facePickedIcons[2]); //change highlighted
+                //make sure the other faces are normal
+                for(int i = 0; i < 5; i++) {
+                    if(i != 2) {
+                        faces[i].setIcon(faceIcons[i]);
+                    }
+                }
+                rating = 3;
+                System.out.println("rating is: " + rating);
+            }
+        });
+        faces[3].addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                faces[3].setIcon(facePickedIcons[3]); //change highlighted
+                //make sure the other faces are normal
+                for(int i = 0; i < 5; i++) {
+                    if(i != 3) {
+                        faces[i].setIcon(faceIcons[i]);
+                    }
+                }
+                rating = 4;
+                System.out.println("rating is: " + rating);
+            }
+        });
+        faces[4].addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                faces[4].setIcon(facePickedIcons[4]); //change highlighted
+                //make sure the other faces are normal
+                for(int i = 0; i < 5; i++) {
+                    if(i != 4) {
+                        faces[i].setIcon(faceIcons[i]);
+                    }
+                }
+                rating = 5;
+                System.out.println("rating is: " + rating);
+            }
+        });
     }
 
     //Getter and setter methods for sleep time and wake time
@@ -919,6 +1104,13 @@ class LogSleep extends JPanel /*implements MouseListener*/{
     //create a SleepNode (that can be added to SleepHistory)
     public SleepNode createSleepNode(){
         return new SleepNode(sleepTime, wakeTime, sleepNote, rating);
+    }
+
+    public void clearLog(){
+        sleepTime = null;
+        wakeTime = null;
+        rating = 0;
+        sleepNote = null;
     }
 }
 
