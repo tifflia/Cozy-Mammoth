@@ -93,7 +93,15 @@ public class Main extends JPanel{
         SleepHistory testhistory = new SleepHistory(testMonday);
         Schedule testcalendar = new Schedule();
         SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal(), testhistory, testcalendar);
-        System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
+        //System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
+        testRec.calculateSleepRec();
+        System.out.println(testRec.getSleepRecsMessages(0) + testRec.getSleepRecs(0));
+        System.out.println(testRec.getSleepRecsMessages(1) + testRec.getSleepRecs(1));
+        System.out.println(testRec.getSleepRecsMessages(2) + testRec.getSleepRecs(2));
+        System.out.println(testRec.getSleepRecsMessages(3) + testRec.getSleepRecs(3));
+        System.out.println(testRec.getSleepRecsMessages(4) + testRec.getSleepRecs(4));
+        System.out.println(testRec.sleepHistorySummary(testMonday));
+
         //fix
         // System.out.println(testHistory.getAverageDuration());
 
@@ -1136,45 +1144,78 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
         this.calendar = calendar;
         sleepRecs = new Time[5];    //contains 5 recommended times.
         sleepRecsMessages = new String[5];
-
     }
-    //will implement more complex algorithms later (considering rem cycle, etc)
+
     public Time[] calculateSleepRec(){
-        //returns array of 5 recommended times. [0] = sleepGoalRec (based on inputted goals)
-        //[1] = highest rec sleep cycles. [2] = 2nd highest rec sleep cycles. 
-        //[3] = 1 sleep cycle below sleepGoalRec. [4] = 2 sleep cycles below sleepGoalRec
-        int sleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
-        int sleepRecHours = (wakeTime.getHour() - sleepGoal);
-        if (sleepRecMins < 0){
-            sleepRecMins = 60 - Math.abs(sleepRecMins);
-            sleepRecHours =- 1;
+        /*returns array of 5 recommended times. [0] = sleepGoalRec (based on inputted goals)
+        [1] = highest rec sleep cycles. [2] = 2nd highest rec sleep cycles. 
+        [3] = 1 sleep cycle below sleepGoalRec. [4] = 2 sleep cycles below sleepGoalRec */
+        
+        //calculate goal sleep [0]
+        int goalsleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
+        int goalsleepRecHours = (wakeTime.getHour() - sleepGoal);
+        if (goalsleepRecMins < 0){  // make own method or something, generic/extends?
+            goalsleepRecMins = 60 - Math.abs(goalsleepRecMins);
+            goalsleepRecHours =- 1;
         }
-        if (sleepRecHours < 0){
-            sleepRecHours = 24 + sleepRecHours;
+        if (goalsleepRecHours < 0){
+            goalsleepRecHours = 24 + goalsleepRecHours;
         }
-        sleepRecs[0] = new Time(sleepRecHours, sleepRecMins);   //contains sleep recommendation based on sleep goal
-        sleepRecsMessages[0] = "According to your set goals, you should sleep at: ";
+        int numOfCycles = goalsleepRecHours
+        ((bestsleepRecHours1 * 60) + bestsleepRecMins1) / 90;
+        sleepRecs[0] = new Time(goalsleepRecHours, goalsleepRecMins);   //contains sleep recommendation based on sleep goal
+        sleepRecsMessages[0] = "According to your set goals ( " + numOfCycles + "cycles), you should sleep at: ";
 
         //calculates best sleep times
-        int bestsleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
-        int bestsleepRecHours = (wakeTime.getHour() - 9);
-        if (bestsleepRecMins < 0){
-            bestsleepRecMins = 60 - Math.abs(bestsleepRecMins);
-            bestsleepRecHours =- 1;
+        int hourSubtractor = 0;
+        int minSubtractor = 0;
+        int bestsleepRecMins1 = 0;
+        int bestsleepRecHours1 = 0;
+        int[] possibleCycles = getAgeSleepHours((int) age);
+        for (int hour : possibleCycles){    //check if same as goalsleeprec
+            hourSubtractor = hour;
+            if (sleepGoal < hour){
+                bestsleepRecMins1 = (wakeTime.getMinutes() - 15);
+                bestsleepRecHours1 = (wakeTime.getHour() - hourSubtractor);
+            } else{
+                hourSubtractor += 1;    //if based on age, still need more sleep
+                minSubtractor += 30;
+                bestsleepRecMins1 = ((wakeTime.getMinutes() - minSubtractor)- 15);
+                bestsleepRecHours1 = (wakeTime.getHour() - hourSubtractor);
+            }
         }
-        if (bestsleepRecHours < 0){
-            bestsleepRecHours = 24 + bestsleepRecHours;
+        if (bestsleepRecMins1 < 0){
+            bestsleepRecMins1 = 60 - Math.abs(bestsleepRecMins1);
+            bestsleepRecHours1 =- 1;
         }
-        int mins = (bestsleepRecHours * 60) + bestsleepRecMins;
-        int numOfCycles = mins / 90;    // check this is right
-        sleepRecs[1] = new Time(bestsleepRecHours, bestsleepRecMins); //contains sleep recommendation based on ideal sleep cycles for age
-        if (sleepRecs[1] == sleepRecs[2]){  // if same as goal-based rec, give rec with more sleep cycles
-            mins += 90;
-            bestsleepRecHours = mins / 60;
-            bestsleepRecMins = ((mins % 60) * 60) / 100;
-            sleepRecs[1] = new Time (bestsleepRecHours, bestsleepRecMins);
+        if (bestsleepRecHours1 < 0){
+            bestsleepRecHours1 = 24 + bestsleepRecHours1;
         }
-        sleepRecsMessages[1] = "For sleeping " + numOfCycles + " cycles, you should sleep at: ";
+        // int mins = (bestsleepRecHours * 60) + bestsleepRecMins;
+        numOfCycles = ((bestsleepRecHours1 * 60) + bestsleepRecMins1) / 90;    // check this is right
+        sleepRecs[1] = new Time(bestsleepRecHours1, bestsleepRecMins1); //contains sleep recommendation based on ideal sleep cycles for age
+        // if (sleepRecs[1] == sleepRecs[2]){  // if same as goal-based rec, give rec with more sleep cycles
+        //     mins += 90;
+        //     bestsleepRecHours = mins / 60;
+        //     bestsleepRecMins = ((mins % 60) * 60) / 100;
+        //     sleepRecs[1] = new Time (bestsleepRecHours, bestsleepRecMins);
+        // }
+        sleepRecsMessages[1] = "To sleep " + numOfCycles + " cycles, you should sleep at: ";
+
+        //calculate MoreSleepRec
+        int bestsleepRecMins2 = ((wakeTime.getMinutes() - (minSubtractor+30)- 15)); //add another cycle
+        int bestsleepRecHours2 = (wakeTime.getHour() - (hourSubtractor+1));
+
+        if (bestsleepRecMins2 < 0){
+            bestsleepRecMins2 = 60 - Math.abs(bestsleepRecMins2);
+            bestsleepRecHours2 =- 1;
+        }
+        if (bestsleepRecHours2 < 0){
+            bestsleepRecHours2 = 24 + bestsleepRecHours2;
+        }
+        numOfCycles = ((bestsleepRecHours2 * 60) + bestsleepRecMins2) / 90;
+        sleepRecs[2] = new Time(bestsleepRecHours2, bestsleepRecMins2); //contains sleep recommendation based on ideal sleep cycles for age
+        sleepRecsMessages[2] = "To sleep " + numOfCycles + " cycles, you should sleep at: ";
 
         //calculates less sleep times
         int othersleepRecMins = (wakeTime.getMinutes() - 15);    //takes 15 mins to fall asleep
@@ -1191,34 +1232,51 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
         if (othersleepRecHours < 0){
             // validation --> if rec is negative/less than 0 hours, then wrong. don't show/null.
         }
-        //have 2 other calcualtions too, [2] and [3]
+        
+        int hourAdd = 0;
+        int minAdd = 0;
+        int lessSleepRecMins1 = 0;
+        int lessSleepRecHours1 = 0;
+        // check if same as 2 and 3. if so, -90 again --> shouldnt be tho? 2 and 3 should be greater than goal?
+        lessSleepRecMins1 = goalsleepRecMins - 30;  // one cycle less than goal sleep rec
+        lessSleepRecHours1 = goalsleepRecHours - 1;
+        if (lessSleepRecMins1 < 0){
+            lessSleepRecMins1 = 60 - Math.abs(lessSleepRecMins1);
+            lessSleepRecHours1 =- 1;
+        }
+        if (lessSleepRecHours1 < 0){
+            lessSleepRecHours1 = 24 + lessSleepRecHours1;
+        }
+        // int mins = (bestsleepRecHours * 60) + bestsleepRecMins;
+        numOfCycles = ((lessSleepRecHours1 * 60) + lessSleepRecMins1) / 90;    // check this is right
+        sleepRecs[3] = new Time(lessSleepRecHours1, lessSleepRecMins1); //contains sleep recommendation based on ideal sleep cycles for age
+        // if (sleepRecs[1] == sleepRecs[2]){  // if same as goal-based rec, give rec with more sleep cycles
+        //     mins += 90;
+        //     bestsleepRecHours = mins / 60;
+        //     bestsleepRecMins = ((mins % 60) * 60) / 100;
+        //     sleepRecs[1] = new Time (bestsleepRecHours, bestsleepRecMins);
+        // }
+        sleepRecsMessages[3] = "To sleep " + numOfCycles + " cycles, you should sleep at: ";
+        //calculate less sleep rec
+        int lessSleepRecMins2 = lessSleepRecMins1 - 30;  // one cycle less than prev sleep rec
+        int lessSleepRecHours2 = lessSleepRecHours1 - 1;
+        if (lessSleepRecMins2 < 0){
+            lessSleepRecMins2 = 60 - Math.abs(lessSleepRecMins2);
+            lessSleepRecHours2 =- 1;
+        }
+        if (lessSleepRecHours2 < 0){
+            lessSleepRecHours2 = 24 + lessSleepRecHours2;
+        }
+        numOfCycles = ((lessSleepRecHours2 * 60) + lessSleepRecMins2) / 90;
+        sleepRecs[4] = new Time(lessSleepRecHours2, lessSleepRecMins2); //contains sleep recommendation based on ideal sleep cycles for age
+        sleepRecsMessages[4] = "To sleep " + numOfCycles + " cycles, you should sleep at: ";
+
 
         return sleepRecs;
 
     }
-    //     Time sleeprec = new Time(sleepRecHours, sleepRecMins);
-    //     String toreturn = sleeprec.toString();
-    //     //now check if best, and calculate other options
-    //     int[] userAgeSleepHours = getAgeSleepHours();
-    //     boolean matchAge = true;
-        
-    //     for (int i = 0; i < userAgeSleepHours.length; i++){
-    //         if (sleepGoal == userAgeSleepHours[i]){     //goal hours matches recommendation for age
-           
-    //         }
-    //         else{matchAge = false;}
-    //     }
-    //     if (matchAge = false){  //check other hours in age range
-    //         for (int i = 0; i < userAgeSleepHours.length; i++){
-
-    //         }
-    //     }
-        //Best Recommendation using goal sleep hours, wake up time and sleep time.
-        //Checks if fits with recommended sleep hours according to age
-            // check duration/hours, ie: if recommendation is 8, make sure fits with recommendation for age)
-  //  }
-
-    public int[] getAgeSleepHours(){    
+  
+    public int[] getAgeSleepHours(int age){    
         //get recommended hours of sleep by age
         if (age <= 0.25){ //newborn
             return new int[] {14,15,16,17};  //hours recommended
@@ -1245,6 +1303,24 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
             return new int[] {7,8};
         }
         return null;
+    }
+
+    public Time getSleepRecs(int index){
+        return sleepRecs[index];
+    }
+
+    public String getSleepRecsMessages(int index){
+        return sleepRecsMessages[index];
+    }
+
+    public String sleepHistorySummary(SleepNode curr){
+        //if average of durations of past week/7 days is < sleep goal hours,
+        if (4/2 != 3){
+            return "You haven't been meeting your sleep goal. Try to sleep more today!";
+        }
+        //else if average is sleep goal at least -- counter > 0 && counter < 4:
+        return "Good! You met your goal n times over the past 7 days";
+        //else if coutner >= 4, return "Great! You met your goal n times in the past 7 days.";
     }
 
     //graphics for sleeprecommendation.
