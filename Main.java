@@ -15,8 +15,14 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
-import java.util.Date;
 import java.util.Scanner;
+
+import java.util.Date;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+import java.text.SimpleDateFormat;
 
 public class Main extends JPanel{
     public static final int WIDTH = 500;
@@ -104,11 +110,10 @@ public class Main extends JPanel{
         //fix
         // System.out.println(testHistory.getAverageDuration());
 
-        Date date = new Date();
 
     }
 
-    // public void paintComponent(Graphics g) {
+    // public void paintComponent(Graphics g) {.
     //     super.paintComponent(g);
 
     //     //draw the welcome screen
@@ -551,7 +556,12 @@ class Home extends JPanel{
             title.setAlignmentX(Component.CENTER_ALIGNMENT); //for center alignment in boxlayout
             title.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
 
-            JLabel date = new JLabel("[Date Placeholder]");
+            //JFrame date
+            Date j = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy");
+            String formattedDate = dateFormat.format(j);
+            JLabel date = new JLabel();
+            date.setText(formattedDate);
             header.add(date);
 
             date.setForeground(Color.WHITE);
@@ -1161,7 +1171,7 @@ class SleepRecommendation extends JPanel /*implements MouseListener*/{
         if (goalsleepRecHours < 0){
             goalsleepRecHours = 24 + goalsleepRecHours;
         }
-        int numOfCycles = goalsleepRecHours
+        int numOfCycles = goalsleepRecHours;
         ((bestsleepRecHours1 * 60) + bestsleepRecMins1) / 90;
         sleepRecs[0] = new Time(goalsleepRecHours, goalsleepRecMins);   //contains sleep recommendation based on sleep goal
         sleepRecsMessages[0] = "According to your set goals ( " + numOfCycles + "cycles), you should sleep at: ";
@@ -1415,7 +1425,6 @@ class SleepNode{
         return duration;
     }
 }
-
 class Schedule extends JPanel /*implements MouseListener*/{
     ArrayList<Event> calendar;
 
@@ -1443,13 +1452,13 @@ class DayNode{
     }
 }
 
-class Event{
+class Event {
     Time start;
     Time end;
     boolean repeating;
     String title;
 
-    public Event(Time s, Time e, boolean r, String t){
+    public Event(Time s, Time e, boolean r, String t) {
 
         start = s;
         end = e;
@@ -1457,14 +1466,13 @@ class Event{
         title = t;
     }
 
-    public int compareTo(Event other){
-        if(this.start.meridiem=="AM" && other.start.meridiem == "PM"){
+    public int compareTo(Event other) {
+        if (this.start.meridiem == "AM" && other.start.meridiem == "PM") {
             return -1;
         }
-        if(this.start.meridiem=="PM" && other.start.meridiem == "AM"){
+        if (this.start.meridiem == "PM" && other.start.meridiem == "AM") {
             return 1;
-        }
-        else {
+        } else {
             if (this.start.hours > other.start.hours) {
                 return 1;
             }
@@ -1481,15 +1489,5 @@ class Event{
             }
             return 0;
         }
-
-        //first check if one is am or pm
-        //if other is am and this is pm, return 1
-        //if other is pm and this is am return -1
-        //if they are both one or the other, go into conditionals within the conditional that checks if they are the same
-        //three conditionals within this one, one that checks this.start.hours<other.start.hours, one that checks this.start.hours<other.start.hours
-        //and one that checks this.start.hours==other.start.hours
-        //if they equal eachother then you want to have three more conditionals within that one, checking the same thing as the other three but this time with minutes
-        //for all of these conditions, return -1 for less than, 1 for greater than, and 0 for equals
-
-        }
+    }
 }
