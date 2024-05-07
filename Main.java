@@ -1166,6 +1166,7 @@ class SleepRecommendation extends JPanel{
     //hard-coded in so that it could run... change it back when SleepRec is fully implemented - tiffany
     private Time[] sleepRecs = {new Time(1,0),new Time(2,0),new Time(3,0),new Time(4,0),new Time(5,0)}; /*new Time[5];*/    //contains 5 recommended times.
     private String[] sleepRecsMessages = new String[5];
+    String sleepSummary;
     //to reference for graphics for the page within this class
     Main mainInstance;
 
@@ -1502,8 +1503,14 @@ class SleepRecommendation extends JPanel{
 
     public String sleepHistorySummary(SleepNode curr){
         //if average of durations of past week/7 days is < sleep goal hours,
-        if (4/2 != 3){
-            return "You haven't been meeting your sleep goal. Try to sleep more today!";
+        double average = 3;   // get history
+        if (average < 1){
+            sleepSummary = "You haven't been meeting your sleep goal. Try to sleep more today!";
+            return sleepSummary;
+        }
+        else if (average > 0 && average < 4){
+            sleepSummary= "Good! You met your goal n times over the past 7 days";
+            return sleepSummary;
         }
         //else if average is sleep goal at least -- counter > 0 && counter < 4:
         return "Good! You met your goal n times over the past 7 days";
