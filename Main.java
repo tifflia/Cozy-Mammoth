@@ -112,33 +112,7 @@ public class Main extends JPanel{
         frame.pack();
         frame.setVisible(true);
 
-
-        //testing user and time class
-        Time bedTime = new Time(0, 00);
-        Time wakeTime = new Time(8, 00);
-        User testUser = new User("John Doe", 20, 8, bedTime, wakeTime);
-        System.out.println("bedtime goal: " + testUser.getBedTime());
-        System.out.println("wake up goal: " + testUser.getWakeTime());
-        //commented out to make program compile - tiffany
-        // SleepNode testMonday = new SleepNode(bedTime, wakeTime, "I woke up very refreshed.", 5);
-        // SleepHistory testHistory = new SleepHistory(testMonday);
-        // SleepHistory testhistory = new SleepHistory(testMonday);
-
-        //commented out to make program compile - tiffany
-        // SleepRecommendation testRec = new SleepRecommendation(testUser.getWakeTime(), testUser.getBedTime(), testUser.getAge(), testUser.getSleepGoal(), testhistory, testcalendar);
-
-        //System.out.println("Based on your wake up goal, you should sleep at " + testRec.calculateSleepRec());
-
-        // testRec.calculateSleepRec();
-        // System.out.println(testRec.getSleepRecsMessages(0) + testRec.getSleepRecs(0));
-        // System.out.println(testRec.getSleepRecsMessages(1) + testRec.getSleepRecs(1));
-        // System.out.println(testRec.getSleepRecsMessages(2) + testRec.getSleepRecs(2));
-        // System.out.println(testRec.getSleepRecsMessages(3) + testRec.getSleepRecs(3));
-        // System.out.println(testRec.getSleepRecsMessages(4) + testRec.getSleepRecs(4));
-        // System.out.println(testRec.sleepHistorySummary(testMonday));
-
-        //fix
-        // System.out.println(testHistory.getAverageDuration());
+        //testing LogSleep page
         SleepNode test = new SleepNode(new Time(0,0),new Time(6,0),"My sleep was ok.",3);
         mainInstance.SleepHistory.addDay(test);
 
@@ -2204,74 +2178,5 @@ class Settings extends JPanel{
                 mainInstance.cl.show(mainInstance,"3");
             }
         });
-    }
-}
-
-
-//unimplemented classes...
-class Schedule extends JPanel /*implements MouseListener*/{
-    ArrayList<Event> calendar;
-
-    public Schedule(){
-        ArrayList<Event> calendar = new ArrayList<>();
-    }
-
-    public void addEvent(DayNode a, Event e){
-        int i=0;
-        while(e.compareTo(calendar.get(i))==1){
-            i++;
-        }
-        calendar.add(i, e);
-    }
-}
-
-class DayNode{
-    ArrayList <String> eventList;
-
-    Date date;
-
-    public DayNode(){
-        ArrayList <String> eventList = new ArrayList<>();
-        date = new Date();
-    }
-}
-
-class Event {
-    Time start;
-    Time end;
-    boolean repeating;
-    String title;
-
-    public Event(Time s, Time e, boolean r, String t) {
-
-        start = s;
-        end = e;
-        repeating = r;
-        title = t;
-    }
-
-    public int compareTo(Event other) {
-        if (this.start.meridiem == "AM" && other.start.meridiem == "PM") {
-            return -1;
-        }
-        if (this.start.meridiem == "PM" && other.start.meridiem == "AM") {
-            return 1;
-        } else {
-            if (this.start.hours > other.start.hours) {
-                return 1;
-            }
-            if (this.start.hours < other.start.hours) {
-                return -1;
-            }
-            if (this.start.hours == other.start.hours) {
-                if (this.start.minutes > other.start.minutes) {
-                    return 1;
-                }
-                if (this.start.minutes < other.start.minutes) {
-                    return -1;
-                }
-            }
-            return 0;
-        }
     }
 }
